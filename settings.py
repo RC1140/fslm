@@ -112,7 +112,8 @@ BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
-
+CELERY_RESULT_BACKEND = "database"
+CELERY_RESULT_DBURI = ""
 CELERYBEAT_SCHEDULE = {
     'runs-every-30-seconds': {
         'task': 'tasks.add',
