@@ -1,8 +1,6 @@
 from django.db import models
+from django.contrib import admin
 
-
-
-# Create your models here.
 class Drive(models.Model):
     Path=models.CharField(max_length=1024)
     Name=models.CharField(max_length=255)
@@ -19,4 +17,6 @@ class Folder(models.Model):
     Type=models.ForeignKey(FolderType)
     Path=models.CharField(max_length=1024, default='')
     
-    
+class FolderAdmin(admin.ModelAdmin):
+    search_fields = ['Path']
+    list_display = ('Drive','Path','Type')

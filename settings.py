@@ -1,5 +1,6 @@
 # Django settings for fslm project.
 import djcelery
+import os
 djcelery.setup_loader()
 
 DEBUG = True
@@ -85,6 +86,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'fslm.urls'
 
 TEMPLATE_DIRS = (
+    os.path.join(os.path.basename(__file__), 'templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
