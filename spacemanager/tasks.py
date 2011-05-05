@@ -8,4 +8,4 @@ def add(x, y):
 @task()
 def moveFolderBackground(sourceFolder, destFolder):
         shutil.move(sourceFolder,destFolder)
-        return 'Moved folder '+ myfolder +' to '+ destFolder
+        return 'Moved folder '+ sourceFolder +' to '+ destFolder
