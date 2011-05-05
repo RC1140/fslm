@@ -1,6 +1,7 @@
 # Django settings for fslm project.
 import djcelery
 import os
+from datetime import timedelta
 djcelery.setup_loader()
 
 DEBUG = True
@@ -110,5 +111,14 @@ BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
+
+
+CELERYBEAT_SCHEDULE = {
+    'runs-every-30-seconds': {
+        'task': 'tasks.add',
+        'schedule': timedelta(seconds=30),
+        'args': (16, 16)
+    },
+}
 
 from local_settings import *
