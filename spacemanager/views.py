@@ -1,5 +1,6 @@
 # Create your views here.
 import os
+import shutil
 from django.http import HttpResponse
 
 def getSpace(disk):
@@ -17,7 +18,7 @@ def calcSize(start_path):
 		total_size += os.path.getsize(fp)
 	return total_size / (1024 * 1024)
 
-def moveFiles(request):
+def smallestFolder(request):
     '''This defines the monitor and dump folders , later we can add multiple so that 
     it can monitor many folders and dump to many folders as needed based on space '''
     monitorFolder = {'folder':'/downloads/complete/TV/','type':'series'}
@@ -27,10 +28,30 @@ def moveFiles(request):
     smallestChunk = 9999999
     foldername = ''
     for folder in files:
-	myfolder = os.path.join(monitorFolder['folder']+folder) 
+	myfolder = os.path.join(monitorFolder['folder'],folder) 
 	if os.path.isdir(myfolder):
 		if calcSize(myfolder) < smallestChunk:
 			smallestChunk = calcSize(myfolder)
 			foldername = myfolder
 		
     return HttpResponse('This smallest folder that can be moved and its size is '+foldername+' ' +smallestChunk.__str__())
+
+
+def moveFiles(request):
+    #This is the size in megabytes 
+    spaceToFree = 2000
+    monitorFolder = {'folder':'/downloads/complete/TV/','type':'series'}
+    dumpFolder = {'folder':'/media/DownloadWing/Series/','type':'series'}
+
+    folders = os.listdir(monitorFolder['folder'])
+    folders.sort()
+    smallestChunk = 9999999
+    foldername = ''
+    for folder in folders:
+	myfolder = os.path.join(monitorFolder['folder'],folder) 
+	if os.path.isdir(myfolder):
+            if calcSize(myfolder) <= spaceToFree:
+                shutil.move(myfolder,os.path.join(dumpFolder['folder'],folder))
+                return HttpResponse('Moved : '+myfolder)
+
+    return HttpResponse('Nothing moved')
