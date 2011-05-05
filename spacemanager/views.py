@@ -3,6 +3,7 @@ import os
 import shutil
 from django.http import HttpResponse
 from tasks import moveFolderBackground
+from django.shortcuts import *
 
 def getSpace(disk):
     s = os.statvfs(disk)
@@ -37,6 +38,10 @@ def smallestFolder(request):
 		
     return HttpResponse('This smallest folder that can be moved and its size is '+foldername+' ' +smallestChunk.__str__())
 
+
+
+def home(request, callbacks):
+    return render_to_response('home.html', context_instance=RequestContext(request))
 
 def moveFiles(request):
     #This is the size in megabytes 
