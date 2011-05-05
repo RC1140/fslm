@@ -8,7 +8,7 @@ class Drive(models.Model):
         ('D','Dump'),
         ('M','Monitor'),
     )
-    DriveType = models.CharField(max_length=1,choices=Drive_Type) 
+    DriveType = models.CharField(max_length=1,choices=Drive_Types,null=True) 
     #For Dump drives we need to know maximum space usage as a %
     MaxUsagePercentage = models.IntegerField()
     '''For Monitor drives we need to know the ideal space usage as a % 
