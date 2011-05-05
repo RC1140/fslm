@@ -1,2 +1,3 @@
 django-celery
 djkombu
+mysql-python
