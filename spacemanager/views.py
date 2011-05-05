@@ -2,6 +2,7 @@
 import os
 import shutil
 from django.http import HttpResponse
+from tasks import moveFolderBackground
 
 def getSpace(disk):
     s = os.statvfs(disk)
@@ -51,7 +52,7 @@ def moveFiles(request):
 	myfolder = os.path.join(monitorFolder['folder'],folder) 
 	if os.path.isdir(myfolder):
             if calcSize(myfolder) <= spaceToFree:
-                shutil.move(myfolder,os.path.join(dumpFolder['folder'],folder))
-                return HttpResponse('Moved : '+myfolder)
+                moveFolderBackground.delay(myfolder,os.path.join(dumpFolder['folder'],folder))
+                return HttpResponse('Moving in the background : '+myfolder)
 
     return HttpResponse('Nothing moved')
