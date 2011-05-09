@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8"> 
+    <link rel="stylesheet" href="/static/css/style.css" />
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
 <body>
+<div id="drives"><img src="/static/images/ajax-loader.gif" id="loader" alt="loading"/></div>
+<div id="header"></div>
+<div id="bodyholder">
+<div id="content"></div>
 {% block content %}{% endblock %}
+</div>
+<script type="text/javascript" src="/static/js/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="/static/js/raphael-min.js"></script>
+<script type="text/javascript" src="/static/js/main.js"></script>
 </body>

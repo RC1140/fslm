@@ -5,13 +5,14 @@ from django.template import RequestContext,Template,Context
 from django.shortcuts import *
 from tasks import moveFolderBackground
 from models import Drive
+   
 
 def getSpace(disk):
     s = os.statvfs(disk)
-    capacity = s.f_bsize * s.f_blocks
-    available = s.f_bsize * s.f_bavail
-    used = s.f_bsize * (s.f_blocks - s.f_bavail)
-    return (available / (1048576)) / 1000
+    capacity = (s.f_bsize * s.f_blocks)/ (1048576)
+    available = (s.f_bsize * s.f_bavail)/ (1048576)
+    used = (s.f_bsize * (s.f_blocks - s.f_bavail) ) / (1048576)
+    return  {'capacity': capacity,  'used':used, 'available': available}
 
 def calcSize(start_path):
 	total_size = 0
@@ -41,6 +42,17 @@ def smallestFolder(request):
 
 def home(request, callbacks):
     return render_to_response('home.html', context_instance=RequestContext(request))
+
+def drivesList(request, callbacks):
+	#get drives
+        #getSpace('/media/Evo0') 
+	drives = Drive.objects.all()
+	driveData='['
+	for drive in drives:
+            k = getSpace(drive.Path)
+            driveData += "{'name':'"+ drive.Name + "', 'space':'"+  k['available'].__str__() + "','capacity':'"+k['capacity'].__str__()+  "','used':'"+k['used'].__str__()+"'},"
+        driveData += ']'
+        return HttpResponse(driveData)
 
 def moveFiles(request):
     #This is a generic move request almost like what would happen in cron job
