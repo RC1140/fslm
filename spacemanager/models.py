@@ -15,6 +15,8 @@ class Drive(models.Model):
        the app will try to reach this but depending on free space on 
        the dump drives this might not be possible'''
     IdealFreeSpacePercentage = models.IntegerField(default=50)
+    #If the user wants they can specify which drive to use first
+    DumpPreference = models.IntegerField(default=0)
 
 class MediaType(models.Model):    
     Name=models.CharField(max_length=255, default='')
@@ -27,7 +29,14 @@ class Folder(models.Model):
     Drive=models.ForeignKey(Drive)
     Type=models.ForeignKey(FolderType)
     Path=models.CharField(max_length=1024, default='')
-    
+
+class MoveQueueItem(models.Model):    
+    ''' MoveItemQueue is used to indicate any folders that need to be moved
+        Decided not to use the celery tables as they are not
+        dependable (they require the events be turned on and
+        this can be easily forgotten) '''
+    SourceFolder = models.CharField(max_length=1024)
+
 class FolderAdmin(admin.ModelAdmin):
     search_fields = ['Path']
     list_display = ('Drive','Path','Type')
