@@ -38,7 +38,10 @@ class MoveQueueItem(models.Model):
         Decided not to use the celery tables as they are not
         dependable (they require the events be turned on and
         this can be easily forgotten) '''
-    SourceFolder = models.CharField(max_length=1024)
+    SourceFolder = models.CharField(max_length=255,unique=True)
+    DestFolder = models.CharField(max_length=1024)
+    #space that can be freed by executing this item in mb
+    PotentialSpaceFreed = models.IntegerField(default=0)
 
 class FolderAdmin(admin.ModelAdmin):
     search_fields = ['Path']
