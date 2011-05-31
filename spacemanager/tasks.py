@@ -2,6 +2,7 @@ from celery.decorators import task
 import shutil
 import os.path
 from models import *
+import notifo
 
 @task()
 def moveFolderBackground(moveQueueID):
