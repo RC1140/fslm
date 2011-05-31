@@ -69,7 +69,8 @@ def getFirstAvailableDumpFolder():
     '''TODO : We need to indicate when a folder is full to prevent a drive
     from being over used'''
     if drives.count() > 0:
-        return drives[0].Path
+        monitorFolders = drives[0].folder_set.all().order_by('Path')
+        return monitorFolders[0].Path
     else:
         return ''
     #for drive in drives:
@@ -92,10 +93,11 @@ def moveFiles(request):
                if so start checking them as candidates to be moved'''
         for monitorFolder in monitorFolders:
             scanFolders = os.listdir(monitorFolder.Path)
-            folders.sort()
+            scanFolders.sort()
             smallestChunk = 9999999
             foldername = ''
-            for folder in folders:
+		
+            for folder in scanFolders:
                 myfolder = os.path.join(monitorFolder.Path,folder) 
                 if os.path.isdir(myfolder):
                     '''If the size of the folder we are checking is smaller than the amount of
@@ -106,5 +108,7 @@ def moveFiles(request):
                         if firstAvailableFolder != '':
                             moveFolderBackground.delay(myfolder,os.path.join(firstAvailableFolder,folder))
                             return HttpResponse('Moving in the background : '+myfolder)
+			else:
+                            return HttpResponse('No Dump folders found')
 
     return HttpResponse('Nothing moved')

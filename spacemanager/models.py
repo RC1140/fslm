@@ -18,6 +18,9 @@ class Drive(models.Model):
     #If the user wants they can specify which drive to use first
     DumpPreference = models.IntegerField(default=0)
 
+    def __unicode__(self):
+	return self.DriveType.__str__() + ' ' + self.Name
+
 class MediaType(models.Model):    
     Name=models.CharField(max_length=255, default='')
 
