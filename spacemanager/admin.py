@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fslm.spacemanager.models import 
+from fslm.spacemanager.models import *
 
 admin.site.register(Drive,DriveAdmin)
 admin.site.register(MediaType,MediaTypeAdmin)
