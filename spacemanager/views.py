@@ -4,8 +4,7 @@ from django.http import HttpResponse
 from django.template import RequestContext,Template,Context
 from django.shortcuts import *
 from tasks import moveFolderBackground
-from models import Drive
-
+from models import *
 
 def getSpace(disk):
     s = os.statvfs(disk)
@@ -13,7 +12,6 @@ def getSpace(disk):
     available = (s.f_bsize * s.f_bavail)/ (1048576)
     used = (s.f_bsize * (s.f_blocks - s.f_bavail) ) / (1048576)
     return  {'capacity': capacity,  'used':used, 'available': available}
-
         
 def checkDriveOverMaxCapacity(disk):
     s = getSpace(disk.Path)
@@ -24,7 +22,6 @@ def checkDriveOverMaxCapacity(disk):
         return True
     else:
         return False
-        
 
 def formatDriveSpace(kb):
     '''If Its more than 10 change it to the next format'''
@@ -41,7 +38,6 @@ def formatDriveSpace(kb):
     kb = round(kb, 2)
     
     return kb.__str__() + format
-        
 
 def getDriveOverMaxCapacity(disk):
     #something is wrong here i think
@@ -54,7 +50,6 @@ def getDriveOverMaxCapacity(disk):
         over = used - capacitySize
         return formatDriveSpace(over)
     return 0
-
 
 def calcSize(start_path):
     total_size = 0
@@ -85,8 +80,6 @@ def smallestFolder(folderToCheck):
 
 def home(request, callbacks):
     return render_to_response('home.html', context_instance=RequestContext(request))
-
-
 
 def drivesList(request, callbacks):
     #get drives
@@ -158,7 +151,10 @@ def moveFiles(request):
                         '''Get a dump folder , check if one is found if so that use it for the copies'''
                         firstAvailableFolder = getFirstAvailableDumpFolder()
                         if firstAvailableFolder != '':
-                            moveFolderBackground.delay(myfolder,os.path.join(firstAvailableFolder,folder))
+                            mi = MoveQueueItem()
+                            mi.SourceFolder = myfolder
+                            mi.DestFolder = os.path.join(firstAvailableFolder,folder)
+                            moveFolderBackground.delay(mi.id)
                             return HttpResponse('Moving in the background : '+myfolder)
 			else:
                             return HttpResponse('No Dump folders found')
