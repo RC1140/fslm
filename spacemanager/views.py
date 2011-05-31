@@ -194,4 +194,4 @@ def moveFiles(request):
                                     #return HttpResponse('Moving in the background : ' + myfolder)
                                 else:
                                     return HttpResponse('No Dump folders found')
-            return render_to_response('dataToBeMoved.html',{'folders':foldersQueued})
+            return render_to_response('dataToBeMoved.html',{'folders':foldersQueued}, context_instance=RequestContext(request))
