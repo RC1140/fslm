@@ -121,5 +121,9 @@ CELERYBEAT_SCHEDULE = {
         'args': (16, 16)
     },
 }
+#Replace this your personal key
+notifoSecret = ''
+#Replace this your username
+notifoUser = ''
 
 from local_settings import *
