@@ -170,23 +170,24 @@ def moveFiles(request):
 
                 for folder in scanFolders:
                     myfolder = os.path.join(monitorFolder.Path, folder)
-                    if os.path.isdir(myfolder):
-                        '''If the size of the folder we are checking is smaller than the amount of
-                            space we need its ok to move the folder'''
-                        folderSpace = calcSize(myfolder)
-                        if (freedSpace + folderSpace) <= spaceToFree:
-                            freedSpace += folderSpace
-                            '''Get a dump folder , check if one is found if so that use it for the copies'''
-                            firstAvailableFolder = getFirstAvailableDumpFolder()
-                            if firstAvailableFolder != '':
-                                mi = MoveQueueItem()
-                                mi.SourceFolder = myfolder
-                                mi.DestFolder = os.path.join(firstAvailableFolder, folder)
-                                mi.PotentialSpaceFreed = calcSize(myfolder)
-                                mi.save()
-                                foldersQueued.append(mi)
-                                #moveFolderBackground.delay(mi.id)
-                                #return HttpResponse('Moving in the background : ' + myfolder)
-                            else:
-                                return HttpResponse('No Dump folders found')
-        return render_to_response('dataToBeMoved.html',{'folders':foldersQueued})
+                    if MoveQueueItem.objects.filter(SourcePath=myfolder).count() == 0:
+                        if os.path.isdir(myfolder):
+                            '''If the size of the folder we are checking is smaller than the amount of
+                                space we need its ok to move the folder'''
+                            folderSpace = calcSize(myfolder)
+                            if (freedSpace + folderSpace) <= spaceToFree:
+                                freedSpace += folderSpace
+                                '''Get a dump folder , check if one is found if so that use it for the copies'''
+                                firstAvailableFolder = getFirstAvailableDumpFolder()
+                                if firstAvailableFolder != '':
+                                    mi = MoveQueueItem()
+                                    mi.SourceFolder = myfolder
+                                    mi.DestFolder = os.path.join(firstAvailableFolder, folder)
+                                    mi.PotentialSpaceFreed = calcSize(myfolder)
+                                    mi.save()
+                                    foldersQueued.append(mi)
+                                    #moveFolderBackground.delay(mi.id)
+                                    #return HttpResponse('Moving in the background : ' + myfolder)
+                                else:
+                                    return HttpResponse('No Dump folders found')
+            return render_to_response('dataToBeMoved.html',{'folders':foldersQueued})

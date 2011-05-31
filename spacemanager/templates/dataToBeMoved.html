@@ -10,6 +10,7 @@
 
 {% block content %}
     <form action="." method="POST">
+    {% csrf_token %}
         <ul>
             {% for folder in folders %}
                 <li>
