@@ -3,6 +3,7 @@ import shutil
 import os.path
 from models import *
 import notifo
+import settings
 
 @task()
 def moveFolderBackground(moveQueueID):
