@@ -154,6 +154,7 @@ def moveFiles(request):
                             mi = MoveQueueItem()
                             mi.SourceFolder = myfolder
                             mi.DestFolder = os.path.join(firstAvailableFolder,folder)
+                            mi.save()
                             moveFolderBackground.delay(mi.id)
                             return HttpResponse('Moving in the background : '+myfolder)
 			else:
