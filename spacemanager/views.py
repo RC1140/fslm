@@ -170,7 +170,7 @@ def moveFiles(request):
 
                 for folder in scanFolders:
                     myfolder = os.path.join(monitorFolder.Path, folder)
-                    if MoveQueueItem.objects.filter(SourcePath=myfolder).count() == 0:
+                    if MoveQueueItem.objects.filter(SourceFolder=myfolder).count() == 0:
                         if os.path.isdir(myfolder):
                             '''If the size of the folder we are checking is smaller than the amount of
                                 space we need its ok to move the folder'''
