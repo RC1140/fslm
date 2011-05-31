@@ -1,0 +1,20 @@
+{% extends "master.html" %}
+
+{% block title %}
+The Following folders will be moved , click next to queue them 
+{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for folder in folders %}
+<li>
+{{ folder.SourceFolder }} will be moved to <br/>
+{{ folder.DestFolder }} 
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

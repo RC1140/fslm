@@ -110,7 +110,7 @@ def drivestats(request, drivepath):
     return render_to_response('stats.html', {'drive': drive, 'isOver': isOver, 'overBy': overBy})
 
 
-def getFirstAvailableDumpFolder(excludeFolder):
+def getFirstAvailableDumpFolder(excludeFolder=''):
     '''Should return a folder where files can be moved to 
         if none is found then a '' is returned and nothing should be
         moved , it might also be good to indicate this somewhere in the
@@ -118,27 +118,19 @@ def getFirstAvailableDumpFolder(excludeFolder):
     if Drive.objects.filter(DriveType='D').count() == 0:
         return ''
 
-    if excludeFolder:
-        drives = Drive.objects.filter(DriveType='D').order_by('DumpPreference')
-    else:
-        drives = Drive.objects.filter(DriveType='D').order_by('DumpPreference')
+    drives = Drive.objects.filter(DriveType='D').order_by('DumpPreference')
 
-    '''TODO : We need to indicate when a folder is full to prevent a drive
-    from being over used'''
     if drives.count() > 0:
         for d in drives:
             monitorFolders = d.folder_set.all().order_by('Path')
             for monFolder in monitorFolders:
                 spaceAvailable = getSpace(monFolder.Path)['available']
-                spaceAvailable = spaceAvailable / 1000
+                spaceAvailable = spaceAvailable / 1024
                 #You need to at least have a gig free space
-                if spaceAvailable > 1:
+                if spaceAvailable > 1 and monFolder.Path != excludeFolder:
                     return monFolder.Path
     else:
         return ''
-        #for drive in drives:
-        #freespace = calcSize(drive.Path)
-
 
 def moveFiles(request):
     #This is a generic move request almost like what would happen in cron job
@@ -147,18 +139,20 @@ def moveFiles(request):
         return HttpResponse('No Drives setup to monitor')
         #todo use getDriveOverMaxCapacity to get amount of space needed
     
-
+    #For now this is fixed but it can be made dynamic
     spaceToFree = 2000
 
     drives = Drive.objects.filter(DriveType='M')
     #Some serious looping about to begin , this might be able to be optimized later
     for monitorDrive in drives:
-        spaceToFree = getDriveOverMaxCapacity(monitorDrive)
-        print spaceToFree
+        freedSpace = 0
+        #spaceToFree = getDriveOverMaxCapacity(monitorDrive)
+        #print spaceToFree
         monitorFolders = monitorDrive.folder_set.all().order_by('Path')
         '''Get a list of drives that we are monitoring 
                Check if there are any folders that were defined for the drive and
                if so start checking them as candidates to be moved'''
+        foldersQueued = []
         for monitorFolder in monitorFolders:
             scanFolders = os.listdir(monitorFolder.Path)
             scanFolders.sort()
@@ -170,7 +164,9 @@ def moveFiles(request):
                 if os.path.isdir(myfolder):
                     '''If the size of the folder we are checking is smaller than the amount of
                         space we need its ok to move the folder'''
-                    if calcSize(myfolder) <= spaceToFree:
+                    folderSpace = calcSize(myfolder)
+                    if (freedSpace + folderSpace) <= spaceToFree:
+                        freedSpace += folderSpace
                         '''Get a dump folder , check if one is found if so that use it for the copies'''
                         firstAvailableFolder = getFirstAvailableDumpFolder()
                         if firstAvailableFolder != '':
@@ -179,8 +175,9 @@ def moveFiles(request):
                             mi.DestFolder = os.path.join(firstAvailableFolder, folder)
                             mi.PotentialSpaceFreed = calcSize(myfolder)
                             mi.save()
-                            moveFolderBackground.delay(mi.id)
-                            return HttpResponse('Moving in the background : ' + myfolder)
+                            foldersQueued.append(mi)
+                            #moveFolderBackground.delay(mi.id)
+                            #return HttpResponse('Moving in the background : ' + myfolder)
                         else:
                             return HttpResponse('No Dump folders found')
-    return HttpResponse('Nothing moved')
+    return render_to_reponse('dataToBeMoved.html','folders':foldersQueued)
