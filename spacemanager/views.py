@@ -137,10 +137,12 @@ def moveFiles(request):
         queueLoader = MoveQueueItem.objects.all()
         for item in queueLoader:
             moveFolderBackground.delay(item.id)
-        return HttpResponse('''{% extends "master.html" %}
+        t = Template('''{% extends "master.html" %}
                                 {% block content %}
                                  Items Queued , as they are completed notifo messages will be sent
                                 {% endblock %}''')
+
+        return HttpResponse(t.render())
     else:
         #This is a generic move request almost like what would happen in cron job
         #If no drives are found exit
