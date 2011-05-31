@@ -14,6 +14,7 @@ def moveFolderBackground(moveQueueID):
         else:
             shutil.move(mi.SourceFolder,mi.DestFolder)
         notifo.send_notification('RC1140',settings.notifoSecret,'RC1140',('%s Moved successfully')%( mi.SourceFolder ))
+        mi.delete()
         return 'Folder Moved'
     else:
         return 'No Queue Item Found'
