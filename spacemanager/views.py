@@ -49,7 +49,7 @@ def getDriveOverMaxCapacity(disk):
     used = float(s['used'])
     perc = (used / cap) * 100
     if perc > disk.MaxUsagePercentage:
-        capacitySize = cap * (float(disk.MaxUsagePercentage) / 100)
+        capacitySize = cap * (float(disk.MaxUsagePercentage) / float(100))
         over = used - capacitySize
         return formatDriveSpace(over)
     return 0
