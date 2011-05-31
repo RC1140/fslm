@@ -153,6 +153,8 @@ def moveFiles(request):
 
         drives = Drive.objects.filter(DriveType='M')
         #Some serious looping about to begin , this might be able to be optimized later
+        if drives.count() == 0:
+            return HttpResponse('No drives found to monitor')
         for monitorDrive in drives:
             freedSpace = 0
             #spaceToFree = getDriveOverMaxCapacity(monitorDrive)
@@ -161,6 +163,8 @@ def moveFiles(request):
             '''Get a list of drives that we are monitoring
                    Check if there are any folders that were defined for the drive and
                    if so start checking them as candidates to be moved'''
+            if monitorFolders.count() == 0:
+                return HttpResponse('No folders found to monitor in the current drive structure')
             foldersQueued = []
             for monitorFolder in monitorFolders:
                 scanFolders = os.listdir(monitorFolder.Path)

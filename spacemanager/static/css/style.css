@@ -33,3 +33,4 @@ body
 }
 ul { list-style:none;  }
 ul li { padding-top:5px; } 
+.menu li { float: left; font-size:25px; padding-right:5px;line-height:30px;color:white;background-color:white;}
