@@ -153,7 +153,7 @@ def moveFiles(request):
     drives = Drive.objects.filter(DriveType='M')
     #Some serious looping about to begin , this might be able to be optimized later
     for monitorDrive in drives:
-        spaceToFree = getDriveOverMaxCapacity(monitorDrive.Path)
+        spaceToFree = getDriveOverMaxCapacity(monitorDrive)
         print spaceToFree
         monitorFolders = monitorDrive.folder_set.all().order_by('Path')
         '''Get a list of drives that we are monitoring 
