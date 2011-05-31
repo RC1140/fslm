@@ -14,21 +14,46 @@ def getSpace(disk):
     used = (s.f_bsize * (s.f_blocks - s.f_bavail) ) / (1048576)
     return  {'capacity': capacity,  'used':used, 'available': available}
 
-
+        
 def checkDriveOverMaxCapacity(disk):
     s = getSpace(disk.Path)
     cap = float(s['capacity'])
     used = float(s['used'])
-    print disk.Path.__str__()
-    print disk.MaxUsagePercentage.__str__()
-    print "Used:" + used.__str__()
-    print "Cap" + cap.__str__()
     perc = (used / cap)*100
-    print perc
     if perc > disk.MaxUsagePercentage:
         return True
     else:
         return False
+        
+
+def formatDriveSpace(kb):
+    '''If Its more than 10 change it to the next format'''
+    format = "KB"
+    if (kb > 10240):
+        kb = kb/1024
+        format = "MB"
+        if (kb > 10240):
+            kb = kb/1024
+            format = "GB"
+            if (kb > 10240):
+                kb = kb/1024
+                format = "TB"
+    kb = round(kb, 2)
+    
+    return kb.__str__() + format
+        
+
+def getDriveOverMaxCapacity(disk):
+    #something is wrong here i think
+    s = getSpace(disk.Path)
+    cap = float(s['capacity'])
+    used = float(s['used'])
+    perc = (used / cap)*100
+    if perc > disk.MaxUsagePercentage:
+        capacitySize = cap*(float(disk.MaxUsagePercentage)/100)
+        over = used - capacitySize
+        return formatDriveSpace(over)
+    return 0
 
 
 def calcSize(start_path):
@@ -71,11 +96,17 @@ def drivesList(request, callbacks):
     for drive in drives:
         k = getSpace(drive.Path)
         isOver = checkDriveOverMaxCapacity(drive)
-        driveData += "{'name':'"+ drive.Name + "', 'space':'"+  k['available'].__str__() + "','capacity':'"+k['capacity'].__str__()+  "','used':'"+k['used'].__str__()+"','isOver':'"+isOver.__str__()+"'},"
+        driveData += "{'name':'"+ drive.Name + "', 'space':'"+  k['available'].__str__() + "','capacity':'"+k['capacity'].__str__()+  "','used':'"+k['used'].__str__()+"','isOver':'"+isOver.__str__()+"','link':'/drivestats/"+drive.id.__str__() +"'},"
     driveData += ']'
     return HttpResponse(driveData)
 
-
+def drivestats(request,drivepath):
+    if (Drive.objects.filter(id=drivepath).count() == 0):
+        return render_to_response('stats.html', context_instance=RequestContext(request))
+    drive = Drive.objects.filter(id=drivepath)[0]
+    isOver =checkDriveOverMaxCapacity(drive)
+    overBy =getDriveOverMaxCapacity(drive)
+    return render_to_response('stats.html',{'drive': drive,  'isOver':isOver,'overBy':overBy  })
 
 def getFirstAvailableDumpFolder():
     '''Should return a folder where files can be moved to 
@@ -102,7 +133,7 @@ def moveFiles(request):
     #If no drives are found exit 
     if Drive.objects.filter(DriveType='M').count() == 0:
         return HttpResponse('No Drives setup to monitor')
-    
+    #todo use getDriveOverMaxCapacity to get amount of space needed 
     spaceToFree = 2000
 
     drives = Drive.objects.filter(DriveType='M')

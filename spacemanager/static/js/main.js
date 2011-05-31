@@ -18,9 +18,11 @@ drives : {
              var x = fslm.drives.drawXPadding ;
              var y = index*fslm.drives.drawYPadding + index*fslm.drives.drawHeight + fslm.drives.drawYPadding;
 			 var drive = fslm.paper.rect(x,y,fslm.drives.drawWidth,fslm.drives.drawHeight);
+             drive.click(function() { document.location= drve.link });
 			 drive.attr({stroke:"#000","stroke-width":"0.2",fill: "#DEDEDE","font-size":fslm.drives.drawFontSize});
              var percentage = (drve.used/ drve.capacity) ;
              var driveFull = fslm.paper.rect(x,y,fslm.drives.drawWidth*percentage,fslm.drives.drawHeight);
+             driveFull.click(function() { document.location= drve.link });
              if (drve.isOver == "False")
              {
                 driveFull.attr({fill:"#5689B3"});
