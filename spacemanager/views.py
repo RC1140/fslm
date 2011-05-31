@@ -5,7 +5,7 @@ from django.template import RequestContext,Template,Context
 from django.shortcuts import *
 from tasks import moveFolderBackground
 from models import Drive
-   
+
 
 def getSpace(disk):
     s = os.statvfs(disk)
@@ -13,6 +13,23 @@ def getSpace(disk):
     available = (s.f_bsize * s.f_bavail)/ (1048576)
     used = (s.f_bsize * (s.f_blocks - s.f_bavail) ) / (1048576)
     return  {'capacity': capacity,  'used':used, 'available': available}
+
+
+def checkDriveOverMaxCapacity(disk):
+    s = getSpace(disk.Path)
+    cap = float(s['capacity'])
+    used = float(s['used'])
+    print disk.Path.__str__()
+    print disk.MaxUsagePercentage.__str__()
+    print "Used:" + used.__str__()
+    print "Cap" + cap.__str__()
+    perc = (used / cap)*100
+    print perc
+    if perc > disk.MaxUsagePercentage:
+        return True
+    else:
+        return False
+
 
 def calcSize(start_path):
     total_size = 0
@@ -30,12 +47,11 @@ def smallestFolder(folderToCheck):
     smallestChunk = 9999999
     foldername = ''
     for checkFile in files:
-	myfolder = os.path.join(folderToCheck,checkFile) 
-	if os.path.isdir(myfolder):
-		if calcSize(myfolder) < smallestChunk:
-			smallestChunk = calcSize(myfolder)
-			foldername = myfolder
-		
+        myfolder = os.path.join(folderToCheck,checkFile) 
+        if os.path.isdir(myfolder):
+            if calcSize(myfolder) < smallestChunk:
+                smallestChunk = calcSize(myfolder)
+                foldername = myfolder
     if foldername != '':
         return (foldername,smallestChunk)
     else:
@@ -45,6 +61,8 @@ def smallestFolder(folderToCheck):
 def home(request, callbacks):
     return render_to_response('home.html', context_instance=RequestContext(request))
 
+
+
 def drivesList(request, callbacks):
     #get drives
     #getSpace('/media/Evo0') 
@@ -52,9 +70,12 @@ def drivesList(request, callbacks):
     driveData='['
     for drive in drives:
         k = getSpace(drive.Path)
-        driveData += "{'name':'"+ drive.Name + "', 'space':'"+  k['available'].__str__() + "','capacity':'"+k['capacity'].__str__()+  "','used':'"+k['used'].__str__()+"'},"
+        isOver = checkDriveOverMaxCapacity(drive)
+        driveData += "{'name':'"+ drive.Name + "', 'space':'"+  k['available'].__str__() + "','capacity':'"+k['capacity'].__str__()+  "','used':'"+k['used'].__str__()+"','isOver':'"+isOver.__str__()+"'},"
     driveData += ']'
     return HttpResponse(driveData)
+
+
 
 def getFirstAvailableDumpFolder():
     '''Should return a folder where files can be moved to 
