@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 import settings
+import os
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -21,5 +22,5 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root': '/home/ewoudt/Downloads/django_projects/venv/fslm/spacemanager/static/'}),
+        (r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root': settings.STATIC_URL }),
 )

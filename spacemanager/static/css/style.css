@@ -15,7 +15,8 @@ body
 {
 	width:800px;
 	margin:0 auto;
-	background-color:#8CC4DB;
+	background-color: #000000;
+    color: #00ff33;
 }
 #content 
 {

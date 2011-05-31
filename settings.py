@@ -125,5 +125,6 @@ CELERYBEAT_SCHEDULE = {
 notifoSecret = ''
 #Replace this your username
 notifoUser = ''
+STATIC_URL = 'spacemanager/static'
 
 from local_settings import *

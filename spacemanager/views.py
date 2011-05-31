@@ -133,51 +133,60 @@ def getFirstAvailableDumpFolder(excludeFolder=''):
         return ''
 
 def moveFiles(request):
-    #This is a generic move request almost like what would happen in cron job
-    #If no drives are found exit 
-    if Drive.objects.filter(DriveType='M').count() == 0:
-        return HttpResponse('No Drives setup to monitor')
-        #todo use getDriveOverMaxCapacity to get amount of space needed
-    
-    #For now this is fixed but it can be made dynamic
-    spaceToFree = 2000
+    if request.method == 'POST':
+        queueLoader = MoveQueueItem.objects.all()
+        for item in queueLoader:
+            moveFolderBackground.delay(item.id)
+        return HttpResponse('''{% extends "master.html" %}
+                                {% block content %}
+                                 Items Queued , as they are completed notifo messages will be sent
+                                {% endblock %}''')
+    else:
+        #This is a generic move request almost like what would happen in cron job
+        #If no drives are found exit
+        if Drive.objects.filter(DriveType='M').count() == 0:
+            return HttpResponse('No Drives setup to monitor')
+            #todo use getDriveOverMaxCapacity to get amount of space needed
 
-    drives = Drive.objects.filter(DriveType='M')
-    #Some serious looping about to begin , this might be able to be optimized later
-    for monitorDrive in drives:
-        freedSpace = 0
-        #spaceToFree = getDriveOverMaxCapacity(monitorDrive)
-        #print spaceToFree
-        monitorFolders = monitorDrive.folder_set.all().order_by('Path')
-        '''Get a list of drives that we are monitoring 
-               Check if there are any folders that were defined for the drive and
-               if so start checking them as candidates to be moved'''
-        foldersQueued = []
-        for monitorFolder in monitorFolders:
-            scanFolders = os.listdir(monitorFolder.Path)
-            scanFolders.sort()
-            smallestChunk = 9999999
-            foldername = ''
+        #For now this is fixed but it can be made dynamic
+        spaceToFree = 2000
 
-            for folder in scanFolders:
-                myfolder = os.path.join(monitorFolder.Path, folder)
-                if os.path.isdir(myfolder):
-                    '''If the size of the folder we are checking is smaller than the amount of
-                        space we need its ok to move the folder'''
-                    folderSpace = calcSize(myfolder)
-                    if (freedSpace + folderSpace) <= spaceToFree:
-                        freedSpace += folderSpace
-                        '''Get a dump folder , check if one is found if so that use it for the copies'''
-                        firstAvailableFolder = getFirstAvailableDumpFolder()
-                        if firstAvailableFolder != '':
-                            mi = MoveQueueItem()
-                            mi.SourceFolder = myfolder
-                            mi.DestFolder = os.path.join(firstAvailableFolder, folder)
-                            mi.PotentialSpaceFreed = calcSize(myfolder)
-                            mi.save()
-                            foldersQueued.append(mi)
-                            #moveFolderBackground.delay(mi.id)
-                            #return HttpResponse('Moving in the background : ' + myfolder)
-                        else:
-                            return HttpResponse('No Dump folders found')
-    return render_to_reponse('dataToBeMoved.html','folders':foldersQueued)
+        drives = Drive.objects.filter(DriveType='M')
+        #Some serious looping about to begin , this might be able to be optimized later
+        for monitorDrive in drives:
+            freedSpace = 0
+            #spaceToFree = getDriveOverMaxCapacity(monitorDrive)
+            #print spaceToFree
+            monitorFolders = monitorDrive.folder_set.all().order_by('Path')
+            '''Get a list of drives that we are monitoring
+                   Check if there are any folders that were defined for the drive and
+                   if so start checking them as candidates to be moved'''
+            foldersQueued = []
+            for monitorFolder in monitorFolders:
+                scanFolders = os.listdir(monitorFolder.Path)
+                scanFolders.sort()
+                smallestChunk = 9999999
+                foldername = ''
+
+                for folder in scanFolders:
+                    myfolder = os.path.join(monitorFolder.Path, folder)
+                    if os.path.isdir(myfolder):
+                        '''If the size of the folder we are checking is smaller than the amount of
+                            space we need its ok to move the folder'''
+                        folderSpace = calcSize(myfolder)
+                        if (freedSpace + folderSpace) <= spaceToFree:
+                            freedSpace += folderSpace
+                            '''Get a dump folder , check if one is found if so that use it for the copies'''
+                            firstAvailableFolder = getFirstAvailableDumpFolder()
+                            if firstAvailableFolder != '':
+                                mi = MoveQueueItem()
+                                mi.SourceFolder = myfolder
+                                mi.DestFolder = os.path.join(firstAvailableFolder, folder)
+                                mi.PotentialSpaceFreed = calcSize(myfolder)
+                                mi.save()
+                                foldersQueued.append(mi)
+                                #moveFolderBackground.delay(mi.id)
+                                #return HttpResponse('Moving in the background : ' + myfolder)
+                            else:
+                                return HttpResponse('No Dump folders found')
+        return render_to_response('dataToBeMoved.html',{'folders':foldersQueued})

@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 
 {% block title %}
-The Following folders will be moved , click next to queue them 
+    The Following folders will be moved , click next to queue them
 {% endblock %}
 
 {% block head %}
@@ -9,12 +9,15 @@ The Following folders will be moved , click next to queue them
 {% endblock %}
 
 {% block content %}
-<ul>
-{% for folder in folders %}
-<li>
-{{ folder.SourceFolder }} will be moved to <br/>
-{{ folder.DestFolder }} 
-</li>
-{% endfor %}
-</ul>
+    <form action="." method="POST">
+        <ul>
+            {% for folder in folders %}
+                <li>
+                    {{ folder.SourceFolder }} will be moved to <br/>
+                    {{ folder.DestFolder }}
+                </li>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Start Copy"/>
+    </form>
 {% endblock %}
