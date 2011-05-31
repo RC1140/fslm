@@ -142,7 +142,7 @@ def moveFiles(request):
                                  Items Queued , as they are completed notifo messages will be sent
                                 {% endblock %}''')
 
-        return HttpResponse(t.render())
+        return HttpResponse(t.render(Context()))
     else:
         #This is a generic move request almost like what would happen in cron job
         #If no drives are found exit
