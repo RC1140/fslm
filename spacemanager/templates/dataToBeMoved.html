@@ -12,20 +12,20 @@
     <form action="." method="POST">
     {% csrf_token %}
     <table>
-        <th>
-            <td> 
-            </td> 
-            <td> 
+        <tr>
+            <th> 
+            </th> 
+            <th> 
                 Source Folder
-            </td> 
-            <td> 
+            </th> 
+            <th> 
                 Destination Folder
-            </td> 
-            <td> 
+            </th> 
+            <th> 
                Source Folder Size 
-            </td> 
+            </th> 
 
-        </th>
+        </tr>
         {% for folder in folders %}
                 <tr>
                     <td><INPUT TYPE=CHECKBOX NAME="{{ folder.id }}"></td>
