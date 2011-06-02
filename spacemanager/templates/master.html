@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href='http://fonts.googleapis.com/css?family=Geo' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lekton' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/static/css/style.css"/>
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
@@ -17,7 +19,9 @@
                 <li><a href="/move/">Queue Files For Move</a></li>
             </ul>
         </div>
+	<div id="innercontent">
         {% block content %}{% endblock %}
+	</div>
     </div>
 </div>
 <script type="text/javascript" src="/static/js/jquery-1.6.min.js"></script>

@@ -31,7 +31,8 @@ drives : {
               {
                   driveFull.attr({fill:"#D92B2B"});
               }
-             fslm.paper.text(x+(fslm.drives.drawWidth*0.5),y+(fslm.drives.drawHeight/2),drve.name + " ("+Math.round(percentage* 100)+"%)");
+             var text = fslm.paper.text(x+(fslm.drives.drawWidth*0.5),y+(fslm.drives.drawHeight/2),drve.name + " ("+Math.round(percentage* 100)+"%)");
+	      text.click(function() { document.location= drve.link });
              
     },
     drawXPadding: 10,

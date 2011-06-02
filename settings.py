@@ -122,9 +122,9 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 #Replace this your personal key
-notifoSecret = ''
+notifoSecret = 'xae6bf7d91c1d7fe970b7ca8e0743185ad05a4f62'
 #Replace this your username
-notifoUser = ''
+notifoUser = 'hellola'
 STATIC_URL = 'spacemanager/static'
 
 from local_settings import *

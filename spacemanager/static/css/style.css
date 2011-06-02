@@ -3,8 +3,11 @@ body
 	background-color:#DCE2E6;
 	margin:0;
 	padding:0;
-    font-size:12px;
+    	font-size:14px;
+	font-family: 'Geo',arial,serif; 
 }
+tspan, text { font-family: 'Geo',arial,serif;font-size:14px;}
+h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
 #header
 {
 	width:100%;
@@ -23,6 +26,10 @@ body
 	width:800px;
 	height:600px;
 }
+#innercontent
+{
+	padding-left:30px; padding-right:30px;
+}
 #drives
 {
     position:relative;
@@ -31,6 +38,7 @@ body
 	width:300px;
 	float:left;
 }
-ul { list-style:none;  }
+ul { list-style:none;padding:0;  }
 ul li { padding-top:5px; } 
 .menu li { float: left; font-size:25px; padding-right:5px;line-height:30px;color:white;background-color:white;}
+.menu { height:35px; width:100%; }
