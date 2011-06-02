@@ -9,12 +9,10 @@
 {% endblock %}
 
 {% block content %}
-    <form action="." method="POST">
+    <form action="/initDbQueue/" method="POST">
     {% csrf_token %}
     <table>
         <tr>
-            <th> 
-            </th> 
             <th> 
                 Source Folder
             </th> 
@@ -27,15 +25,16 @@
 
         </tr>
         {% for folder in folders %}
+            {% if folder.moved %}
                 <tr>
-                    <td><INPUT TYPE=CHECKBOX NAME="{{ folder.id }}"></td>
                     <td>{{ folder.source }} </td> 
                     <td>--> {{ folder.dest }}</td>
                     <td>{{ folder.space }}</td>
                 </tr>
+            {% endif %}
         {% endfor %}
     </table>
         <br clear="all"/>
-        <input type="submit" value="Queue Selected Folders"/>
+        <input type="submit" value="Start Copy"/>
     </form>
 {% endblock %}

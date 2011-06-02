@@ -13,6 +13,7 @@ urlpatterns = patterns('',
      (r'(^home/|^$)', 'spacemanager.views.home'), 
      (r'(^driveslist/)','spacemanager.views.drivesList'),
      (r'^drivestats/(?P<drivepath>.*)/$', 'spacemanager.views.drivestats'),
+     (r'^initDbQueue/$', 'spacemanager.views.initQueue'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

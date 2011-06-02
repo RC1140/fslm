@@ -167,6 +167,21 @@ def getSpaceToFree(monitorDrive, dumpDrive):
     else:
         return vacuum
 
+def initQueue(request):
+    if request.POST:
+        queueLoader = MoveQueueItem.objects.all()
+        for item in queueLoader:
+            moveFolderBackground.delay(item.id)
+
+        t = Template('''{% extends "master.html" %}
+                        {% block content %}
+                         Items Queued , as they are completed notifo messages will be sent
+                         {% endblock %}''')
+
+        return HttpResponse(t.render(Context()))
+    else:
+        return HttpResponse('GET Not Allowed')
+
 def moveFiles(request):
     if request.method == 'POST':
         ''' We dont actually move any folders here we just stick them in the db queue
@@ -185,8 +200,11 @@ def moveFiles(request):
                     logInfo('Saving MoveQueueItem to the db, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
                     mi.save()
                     folderContruct['moved'] = True
+                else:
+                    folderContruct['moved'] = False
 
-        return HttpResponse(t.render(Context({'folders':foldersToMove})))
+        request.session['folders'] = False
+        return render_to_response('dataToBeMoved.html',{'folders':foldersToMove}, context_instance=RequestContext(request))
     else:
         #This is a generic move request almost like what would happen in cron job
         drives = Drive.objects.filter(DriveType='M')
