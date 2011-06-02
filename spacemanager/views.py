@@ -230,8 +230,8 @@ def moveFiles(request):
                 scanFolders.sort()
                 smallestChunk = 9999999
                 foldername = ''
+                id = 0
                 for folder in scanFolders:
-                    id = 1
                     myfolder = os.path.join(monitorFolder.Path, folder)
                     if MoveQueueItem.objects.filter(SourceFolder=myfolder).count() == 0:
                         logInfo('Move: an existing MoveQueueItem was not found')
@@ -256,17 +256,12 @@ def moveFiles(request):
                                     Instead of adding directly to the db , we load into a list for processing later
                                 '''
                                 if firstAvailableFolder != '':
-                                    #mi = MoveQueueItem()
-                                    #mi.SourceFolder = myfolder
-                                    #mi.DestFolder = os.path.join(firstAvailableFolder, folder)
-                                    #mi.PotentialSpaceFreed = calcSize(myfolder)
                                     #logInfo('Saving MoveQueueItem, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
-                                    #mi.save()
+                                    id += 1
                                     foldersQueued.append({'id':id,
                                                           'source':myfolder,
                                                           'dest':os.path.join(firstAvailableFolder, folder),
                                                           'space':calcSize(myfolder)})
-                                    id += 1
                                     #moveFolderBackground.delay(mi.id)
                                     #return HttpResponse('Moving in the background : ' + myfolder)
                                 else:
