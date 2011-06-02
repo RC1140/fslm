@@ -191,7 +191,7 @@ def moveFiles(request):
         foldersToMove = request.session.get('folders',False)
         if foldersToMove:
             for folderConstruct in foldersToMove:
-                moveID = request.POST.get(folderConstruct['id'],False)
+                moveID = request.POST.get(folderConstruct['id'].__str__(),False)
                 if moveID:
                     mi = MoveQueueItem()
                     mi.SourceFolder = folderConstruct['source']
