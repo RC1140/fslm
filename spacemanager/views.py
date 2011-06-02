@@ -3,7 +3,7 @@ import shutil
 from django.http import HttpResponse
 from django.template import RequestContext, Template, Context
 from django.shortcuts import *
-from settings import LOG_FILE
+#from settings import LOG_FILE
 from tasks import moveFolderBackground
 from models import *
 import logging
@@ -169,15 +169,24 @@ def getSpaceToFree(monitorDrive, dumpDrive):
 
 def moveFiles(request):
     if request.method == 'POST':
-        queueLoader = MoveQueueItem.objects.all()
-        for item in queueLoader:
-            moveFolderBackground.delay(item.id)
-        t = Template('''{% extends "master.html" %}
-                                {% block content %}
-                                 Items Queued , as they are completed notifo messages will be sent
-                                {% endblock %}''')
+        ''' We dont actually move any folders here we just stick them in the db queue
+               At some other point in time we can run through the queue and create
+               the required tasks
+        '''
+        foldersToMove = request.session.get('folders',False)
+        if foldersToMove:
+            for folderConstruct in foldersToMove:
+                moveID = request.POST.get(folderContruct['id'],False)
+                if moveID:
+                    mi = MoveQueueItem()
+                    mi.SourceFolder = folderConstruct['source']
+                    mi.DestFolder = folderConstruct['dest']
+                    mi.PotentialSpaceFreed = folderConstruct['space']
+                    logInfo('Saving MoveQueueItem to the db, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
+                    mi.save()
+                    folderContruct['moved'] = True
 
-        return HttpResponse(t.render(Context()))
+        return HttpResponse(t.render(Context({'folders':foldersToMove})))
     else:
         #This is a generic move request almost like what would happen in cron job
         drives = Drive.objects.filter(DriveType='M')
@@ -204,6 +213,7 @@ def moveFiles(request):
                 smallestChunk = 9999999
                 foldername = ''
                 for folder in scanFolders:
+                    id = 1
                     myfolder = os.path.join(monitorFolder.Path, folder)
                     if MoveQueueItem.objects.filter(SourceFolder=myfolder).count() == 0:
                         logInfo('Move: an existing MoveQueueItem was not found')
@@ -224,19 +234,26 @@ def moveFiles(request):
                             logInfo('Folder'+myfolder+' Size: '+folderSpace.__str__()+ 'MB')
                             if (freedSpace + folderSpace) <= spaceToFree:
                                 freedSpace += folderSpace
-                                '''Get a dump folder , check if one is found if so that use it for the copies'''
+                                '''Get a dump folder , check if one is found if so that use it for the copies
+                                    Instead of adding directly to the db , we load into a list for processing later
+                                '''
                                 if firstAvailableFolder != '':
-                                    mi = MoveQueueItem()
-                                    mi.SourceFolder = myfolder
-                                    mi.DestFolder = os.path.join(firstAvailableFolder, folder)
-                                    mi.PotentialSpaceFreed = calcSize(myfolder)
-                                    logInfo('Saving MoveQueueItem, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
-                                    mi.save()
-                                    foldersQueued.append(mi)
+                                    #mi = MoveQueueItem()
+                                    #mi.SourceFolder = myfolder
+                                    #mi.DestFolder = os.path.join(firstAvailableFolder, folder)
+                                    #mi.PotentialSpaceFreed = calcSize(myfolder)
+                                    #logInfo('Saving MoveQueueItem, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
+                                    #mi.save()
+                                    foldersQueued.append({'id':id,
+                                                          'source':myfolder,
+                                                          'dest':os.path.join(firstAvailableFolder, folder),
+                                                          'space':calcSize(myfolder)})
+                                    id += 1
                                     #moveFolderBackground.delay(mi.id)
                                     #return HttpResponse('Moving in the background : ' + myfolder)
                                 else:
                                     return HttpResponse('No Dump folders found')
                         else:
                             logInfo('Move: the folder '+ myfolder + ' is not a valid directory')
+            request.session['folders'] = foldersQueued
             return render_to_response('dataToBeMoved.html',{'folders':foldersQueued}, context_instance=RequestContext(request))

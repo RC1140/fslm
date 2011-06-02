@@ -11,13 +11,32 @@
 {% block content %}
     <form action="." method="POST">
     {% csrf_token %}
-        <ul>
-            {% for folder in folders %}
-                <li>
-                    <div class="left" >{{ folder.SourceFolder }} </div> <div class="mid">--></div><div class="right">{{ folder.DestFolder }}</div>
-                </li>
-            {% endfor %}
-        </ul>
+    <table>
+        <th>
+            <td> 
+               Move Folder 
+            </td> 
+
+            <td> 
+                Source Folder
+            </td> 
+            <td> 
+                Destination Folder
+            </td> 
+            <td> 
+               Source Folder Size 
+            </td> 
+
+        </th>
+        {% for folder in folders %}
+                <tr>
+                    <td><INPUT TYPE=CHECKBOX NAME="{{ folder.id }}"></td>
+                    <td>{{ folder.source }} </td> 
+                    <td>--> {{ folder.dest }}</td>
+                    <td>{{ folder.space }}</td>
+                </tr>
+        {% endfor %}
+    </table>
         <br clear="all"/>
         <input type="submit" value="Start Copy"/>
     </form>

@@ -131,4 +131,6 @@ notifoSecret = ''
 notifoUser = ''
 STATIC_URL = 'spacemanager/static'
 
+SESSION_ENGINE  = 'django.contrib.sessions.backends.file'
+
 from local_settings import *
