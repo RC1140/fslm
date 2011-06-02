@@ -199,9 +199,9 @@ def moveFiles(request):
                     mi.PotentialSpaceFreed = folderConstruct['space']
                     logInfo('Saving MoveQueueItem to the db, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
                     mi.save()
-                    folderContruct['moved'] = True
+                    folderConstruct['moved'] = True
                 else:
-                    folderContruct['moved'] = False
+                    folderConstruct['moved'] = False
 
         request.session['folders'] = False
         return render_to_response('dataToBeMoved.html',{'folders':foldersToMove}, context_instance=RequestContext(request))
