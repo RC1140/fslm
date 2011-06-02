@@ -204,7 +204,7 @@ def moveFiles(request):
                     folderConstruct['moved'] = False
 
         request.session['folders'] = False
-        return render_to_response('dataToBeMoved.html',{'folders':foldersToMove}, context_instance=RequestContext(request))
+        return render_to_response('dataMoved.html',{'folders':foldersToMove}, context_instance=RequestContext(request))
     else:
         #This is a generic move request almost like what would happen in cron job
         drives = Drive.objects.filter(DriveType='M')
