@@ -34,7 +34,7 @@ class Folder(models.Model):
     Path=models.CharField(max_length=1024, default='')
 
 class MoveQueueItem(models.Model):    
-    ''' MoveItemQueue is used to indicate any folders that need to be moved
+    ''' MoveQueueItem is used to indicate any folders that need to be moved
         Decided not to use the celery tables as they are not
         dependable (they require the events be turned on and
         this can be easily forgotten) '''
@@ -58,3 +58,6 @@ class FolderTypeAdmin(admin.ModelAdmin):
 class MediaTypeAdmin(admin.ModelAdmin):
     search_fields = ['Name']
     list_display = ('Name','id')
+class MoveQueueItemAdmin(admin.ModelAdmin):
+    search_fields = ['SourceFolder']
+    list_display = ('id','SourceFolder')

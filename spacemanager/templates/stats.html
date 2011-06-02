@@ -11,8 +11,9 @@
         <li>Path: {{ drive.Path}}</li>
         <li>Type: {{ drive.Type}}</li>
         <li>Is Over Max Usage: {{isOver}}</li>
-        {% if isOver %}
+        
         <li>Over By: {{overBy}}</li>
+        {% if isOver %}
         {% endif %}
         <li>MaxUsagePercentage: {{ drive.MaxUsagePercentage}}</li>
         <li>DumpPreference: {{ drive.DumpPreference}}</li>

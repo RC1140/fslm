@@ -38,7 +38,7 @@ drives : {
     drawXPadding: 10,
     drawYPadding: 10,
 	drawHeight: 40,
-	drawWidth: 100,
+	drawWidth: 300,
     drawFontSize:12,
 	drawColour:'#efefef'
 },

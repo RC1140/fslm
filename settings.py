@@ -1,6 +1,7 @@
 # Django settings for fslm project.
 import djcelery
 import os
+import logging
 from datetime import timedelta
 djcelery.setup_loader()
 
@@ -93,6 +94,9 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -122,9 +126,9 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 #Replace this your personal key
-notifoSecret = 'xae6bf7d91c1d7fe970b7ca8e0743185ad05a4f62'
+notifoSecret = ''
 #Replace this your username
-notifoUser = 'hellola'
+notifoUser = ''
 STATIC_URL = 'spacemanager/static'
 
 from local_settings import *

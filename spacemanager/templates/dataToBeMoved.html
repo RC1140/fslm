@@ -14,11 +14,11 @@
         <ul>
             {% for folder in folders %}
                 <li>
-                    {{ folder.SourceFolder }} will be moved to <br/>
-                    {{ folder.DestFolder }}
+                    <div class="left" >{{ folder.SourceFolder }} </div> <div class="mid">--></div><div class="right">{{ folder.DestFolder }}</div>
                 </li>
             {% endfor %}
         </ul>
+        <br clear="all"/>
         <input type="submit" value="Start Copy"/>
     </form>
 {% endblock %}

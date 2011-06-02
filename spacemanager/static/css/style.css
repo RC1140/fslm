@@ -11,8 +11,17 @@ h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
 #header
 {
 	width:100%;
-	height:80px;
+	height:0px;
 	background-color:#DCE2E6;
+}
+
+a, a:visited
+{
+    color:#5689B3;
+}
+a:hover
+{
+    color:#89B356;
 }
 #bodyholder
 {
@@ -20,6 +29,7 @@ h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
 	margin:0 auto;
 	background-color: #000000;
     color: #00ff33;
+    /*color: #89B356;*/
 }
 #content 
 {
@@ -29,16 +39,29 @@ h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
 #innercontent
 {
 	padding-left:30px; padding-right:30px;
+    height:545px;
+    overflow:auto;
 }
 #drives
 {
     position:relative;
     top:100px;
-	height:600px;
+	height:500px;
 	width:300px;
 	float:left;
 }
+div.left, div.mid 
+{
+    float:left;
+}
+div.right
+{
+    float:right;
+}
+div.left { width:300px; } 
+div.mid { width:15px; padding:left:5px; padding-right:5px; } 
+div.right{ width:300px;}
 ul { list-style:none;padding:0;  }
 ul li { padding-top:5px; } 
-.menu li { float: left; font-size:25px; padding-right:5px;line-height:30px;color:white;background-color:white;}
-.menu { height:35px; width:100%; }
+.menu li { float: left; font-size:25px; padding-left:20px;padding-right:5px;line-height:30px;color:white;background-color:#DCE2E6;}
+.menu { height:55px; width:800px; background-color:#DCE2E6;}
