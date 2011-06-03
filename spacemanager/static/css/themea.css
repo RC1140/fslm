@@ -27,9 +27,7 @@ a:hover
 {
 	width:800px;
 	margin:0 auto;
-	background-color: #000000;
-    color: #00ff33;
-    /*color: #89B356;*/
+    	color: #020202;
 
 }
 #content 
@@ -40,8 +38,9 @@ a:hover
 #innercontent
 {
 	padding-left:30px; padding-right:30px;
-    height:545px;
-    overflow:auto;
+	border:2px solid #CCCCCC;
+    	height:545px;
+	overflow:auto;
 }
 #drives
 {

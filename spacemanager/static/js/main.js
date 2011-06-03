@@ -1,9 +1,13 @@
 fslm = {
 drives : {
 	sizeData : {},
-	getDrivesSize: function(){
+	getDrivesSize: function(callback){
 	  $.get('/driveslist',function(data) {
 		eval('fslm.drives.sizeData = ' + data)
+		if (callback != null)
+		{
+			callback();
+		}
 		})
 	},
 	drawDrives: function(){
@@ -29,7 +33,7 @@ drives : {
               }
               else
               {
-                  driveFull.attr({fill:"#D92B2B"});
+                  driveFull.attr({fill:"#F03F03"});
               }
              var text = fslm.paper.text(x+(fslm.drives.drawWidth*0.5),y+(fslm.drives.drawHeight/2),drve.name + " ("+Math.round(percentage* 100)+"%)");
 	      text.click(function() { document.location= drve.link });
@@ -47,12 +51,14 @@ initRaphael : function() {
 	fslm.paper = Raphael("drives",0,0,80,800);
 },
 init : function() {
-	fslm.drives.getDrivesSize();
-	fslm.initRaphael()
-    setTimeout('fslm.drives.drawDrives()',600);
+		fslm.drives.getDrivesSize(function() {
+		fslm.initRaphael()
+    		setTimeout('fslm.drives.drawDrives()',600);
+		});
 }
 
 }
 $(document).ready(function() { 
+
 fslm.init();
 });

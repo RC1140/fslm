@@ -67,7 +67,8 @@ SECRET_KEY = 'secret'
 
 TEMPLATE_CONTEXT_PROCESSORS=(
     'django.contrib.messages.context_processors.messages', 
-    'django.contrib.auth.context_processors.auth'
+    'django.contrib.auth.context_processors.auth',
+    'spacemanager.context_processors.theme_page'
 )
 
 # List of callables that know how to import templates from various sources.
@@ -130,7 +131,7 @@ notifoSecret = ''
 #Replace this your username
 notifoUser = ''
 STATIC_URL = 'spacemanager/static'
-
+THEME = 'style'
 SESSION_ENGINE  = 'django.contrib.sessions.backends.file'
 
 from local_settings import *

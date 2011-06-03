@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <link href='http://fonts.googleapis.com/css?family=Geo' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Lekton' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/static/css/style.css"/>
+    {% if THEME %}
+	<link rel="stylesheet" href="/static/css/{{THEME}}.css"/>
+    {% endif %}
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
@@ -20,7 +22,7 @@
                 <li><a href="/admin">Configuration</a></li>
             </ul>
         </div>
-	<div id="innercontent">
+	<div id="innercontent" >
         {% block content %}{% endblock %}
 	</div>
     </div>
