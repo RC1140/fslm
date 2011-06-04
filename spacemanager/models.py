@@ -40,7 +40,7 @@ class MoveQueueItem(models.Model):
 
 class FolderAdmin(admin.ModelAdmin):
     search_fields = ['Path']
-    list_display = ('Drive','Path','Type')
+    list_display = ('Drive','Path')
 
 class DriveAdmin(admin.ModelAdmin):
     search_fields = ['Name','Path']
