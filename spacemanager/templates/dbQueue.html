@@ -1,0 +1,57 @@
+{% extends "master.html" %}
+
+{% block title %}
+    The Following folders have been queued into the DB. 
+{% endblock %}
+
+{% block head %}
+<script>
+$(document).ready(function(){
+    $('.delete').click(function(){
+       var queueID = $(this).attr('queueid');  
+       $.ajax({
+           method: 'get',
+           url: '/deleteQueueItem/'+queueID.toString()+'/',
+           success: function(returndata) {
+               alert('Item Deleted');
+           }
+       });
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>The following files have been queued for copy , you may initiate the copy at any time by clicking the start copy below.</h2>
+    <form action="/initDbQueue/" method="POST">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th> 
+               Actions 
+            </th> 
+
+            <th> 
+                Source Folder
+            </th> 
+            <th> 
+                Destination Folder
+            </th> 
+            <th> 
+               Source Folder Size 
+            </th> 
+
+        </tr>
+        {% for folder in folders %}
+                <tr>
+                    <td><a class="delete" queueid="{{ folder.id }}">Delete Row</a> </td> 
+                    <td>{{ folder.SourceFolder }} </td> 
+                    <td>--> {{ folder.DestFolder }}</td>
+                    <td>{{ folder.PotentialSpaceFreed }}</td>
+                </tr>
+        {% endfor %}
+    </table>
+        <br clear="all"/>
+        <input type="submit" value="Start Copy"/>
+    </form>
+{% endblock %}

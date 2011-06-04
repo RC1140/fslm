@@ -182,6 +182,15 @@ def initQueue(request):
     else:
         return HttpResponse('GET Not Allowed')
 
+def deleteQueueItem(request,queueid):
+    queueid = int(queueid)
+    MoveQueueItem.objects.get(id=queueid).delete()
+    return HttpResponse('Queue Item Deleted')
+
+def viewDbQueue(request):
+    itemsToCopy = MoveQueueItem.objects.all()
+    return render_to_response('dbQueue.html',{'folders':itemsToCopy}, context_instance=RequestContext(request))
+
 def moveFiles(request):
     if request.method == 'POST':
         ''' We dont actually move any folders here we just stick them in the db queue
@@ -235,19 +244,22 @@ def moveFiles(request):
                     myfolder = os.path.join(monitorFolder.Path, folder)
                     if MoveQueueItem.objects.filter(SourceFolder=myfolder).count() == 0:
                         logInfo('Move: an existing MoveQueueItem was not found')
+                        dump = getFirstAvailableDumpFolder()
+                        firstAvailableFolder = dump['path']
+                        dumpDrive = dump['drive']
+                        '''If the size of the folder we are checking is smaller than the amount of
+                                space we need its ok to move the folder'''
+                        if (dumpDrive != ''):
+                            '''we dont have to worry about it being a positive number
+                            because we are checking that firstavailablefolder is not
+                            nothing and it only returns folders that have extra space free'''
+                            spaceToFree = abs(getRawDriveOverMaxCapacity(dumpDrive))
+                            logInfo('Space to free: ' +spaceToFree.__str__() + 'MB')
+                        else:
+                            logInfo('Move: DumpDrive recieved was empty')
+
                         if os.path.isdir(myfolder):
                             logInfo('Move: the folder '+ myfolder + ' is a valid directory')
-                            '''If the size of the folder we are checking is smaller than the amount of
-                                space we need its ok to move the folder'''
-                            dump = getFirstAvailableDumpFolder()
-                            firstAvailableFolder = dump['path']
-                            dumpDrive = dump['drive']
-                            if (dumpDrive != ''):
-                                '''we dont have to worry about it being a positive number because we are checking that firstavailablefolder is not nothing and it only returns folders that have extra space free'''
-                                spaceToFree = abs(getRawDriveOverMaxCapacity(dumpDrive))
-                                logInfo('Space to free: ' +spaceToFree.__str__() + 'MB')
-                            else:
-                                logInfo('Move: DumpDrive recieved was empty')
                             folderSpace = calcSize(myfolder)
                             logInfo('Folder'+myfolder+' Size: '+folderSpace.__str__()+ 'MB')
                             if (freedSpace + folderSpace) <= spaceToFree:
@@ -256,17 +268,33 @@ def moveFiles(request):
                                     Instead of adding directly to the db , we load into a list for processing later
                                 '''
                                 if firstAvailableFolder != '':
-                                    #logInfo('Saving MoveQueueItem, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
                                     id += 1
                                     foldersQueued.append({'id':id,
                                                           'source':myfolder,
                                                           'dest':os.path.join(firstAvailableFolder, folder),
                                                           'space':calcSize(myfolder)})
-                                    #moveFolderBackground.delay(mi.id)
-                                    #return HttpResponse('Moving in the background : ' + myfolder)
                                 else:
                                     return HttpResponse('No Dump folders found')
                         else:
+                            logInfo('Move: the folder '+ myfolder + ' is a valid directory')
+                            folderSpace = os.path.getsize(myfolder) 
+                            logInfo('Folder'+myfolder+' Size: '+folderSpace.__str__()+ 'MB')
+                            if (freedSpace + folderSpace) <= spaceToFree:
+                                freedSpace += folderSpace
+                                '''Get a dump folder , check if one is found if so that use it for the copies
+                                    Instead of adding directly to the db , we load into a list for processing later
+                                '''
+                                if firstAvailableFolder != '':
+                                    id += 1
+                                    foldersQueued.append({'id':id,
+                                                          'source':myfolder,
+                                                          'dest':os.path.join(firstAvailableFolder, folder),
+                                                          'space':calcSize(myfolder)})
+                                else:
+                                    return HttpResponse('No Dump folders found')
+
+                            #Yes this is not a dir but we can still move or copy it
                             logInfo('Move: the folder '+ myfolder + ' is not a valid directory')
+
             request.session['folders'] = foldersQueued
             return render_to_response('dataToBeMoved.html',{'folders':foldersQueued}, context_instance=RequestContext(request))

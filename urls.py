@@ -14,6 +14,8 @@ urlpatterns = patterns('',
      (r'(^driveslist/)','spacemanager.views.drivesList'),
      (r'^drivestats/(?P<drivepath>.*)/$', 'spacemanager.views.drivestats'),
      (r'^initDbQueue/$', 'spacemanager.views.initQueue'),
+     url(r'^viewFileInDbQueue/$', 'spacemanager.views.viewDbQueue',name='dbQueue'),
+     (r'^deleteQueueItem/(?P<queueid>\d+)/$', 'spacemanager.views.deleteQueueItem'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
