@@ -46,10 +46,6 @@ class DriveAdmin(admin.ModelAdmin):
     search_fields = ['Name','Path']
     list_display = ('Name','Path')
 
-class FolderTypeAdmin(admin.ModelAdmin):
-    search_fields = ['Name']
-    list_display = ('Name','MediaType')
-
 class MediaTypeAdmin(admin.ModelAdmin):
     search_fields = ['Name']
     list_display = ('Name','id')
