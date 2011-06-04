@@ -1,24 +1,22 @@
 {% extends "master.html" %}
-{% block title %}Stats{% endblock %}
-{% block head %}
 
-{% endblock %}
+{% block title %}Stats{% endblock %}
 
 {% block content %}
-{% if drive %}
-    <ul>
-        <li><h1>{{ drive.Name}}</h1></li>
-        <li>Path: {{ drive.Path}}</li>
-        <li>Type: {{ drive.Type}}</li>
-        <li>Is Over Max Usage: {{isOver}}</li>
-        
-        <li>Over By: {{overBy}}</li>
-        {% if isOver %}
-        {% endif %}
-        <li>MaxUsagePercentage: {{ drive.MaxUsagePercentage}}</li>
-        <li>DumpPreference: {{ drive.DumpPreference}}</li>
-    </ul>
-{% else %}
-    <p>No drive found.</p>
-{% endif %}
+    {% if drive %}
+        <ul>
+            <li><h1>{{ drive.Name}}</h1></li>
+            <li>Path: {{ drive.Path}}</li>
+            <li>Type: {{ drive.Type}}</li>
+            <li>Is Over Max Usage: {{isOver}}</li>
+            
+            <li>Over By: {{overBy}}</li>
+            {% if isOver %}
+            {% endif %}
+            <li>MaxUsagePercentage: {{ drive.MaxUsagePercentage}}</li>
+            <li>DumpPreference: {{ drive.DumpPreference}}</li>
+        </ul>
+    {% else %}
+        <p>No drive found.</p>
+    {% endif %}
 {% endblock %}
