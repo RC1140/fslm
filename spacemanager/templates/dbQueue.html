@@ -7,12 +7,14 @@
 {% block head %}
 <script>
 $(document).ready(function(){
-    $('.delete').click(function(){
+    console.log('test');
+    $('a.delete').click(function(){
        var queueID = $(this).attr('queueid');  
        $.ajax({
            method: 'get',
            url: '/deleteQueueItem/'+queueID.toString()+'/',
            success: function(returndata) {
+               $('a[queueid="'+queueID+'"]').parent().parent().remove();
                alert('Item Deleted');
            }
        });
@@ -23,14 +25,14 @@ $(document).ready(function(){
 
 {% block content %}
 <h2>The following files have been queued for copy , you may initiate the copy at any time by clicking the start copy below.</h2>
-    <form action="/initDbQueue/" method="POST">
+{% if folders %}
+<form action="/initDbQueue/" method="POST">
     {% csrf_token %}
     <table>
         <tr>
             <th> 
-               Actions 
+                Actions 
             </th> 
-
             <th> 
                 Source Folder
             </th> 
@@ -38,20 +40,20 @@ $(document).ready(function(){
                 Destination Folder
             </th> 
             <th> 
-               Source Folder Size 
+                Source Folder Size 
             </th> 
-
         </tr>
         {% for folder in folders %}
-                <tr>
-                    <td><a class="delete" queueid="{{ folder.id }}">Delete Row</a> </td> 
-                    <td>{{ folder.SourceFolder }} </td> 
-                    <td>--> {{ folder.DestFolder }}</td>
-                    <td>{{ folder.PotentialSpaceFreed }}</td>
-                </tr>
+        <tr>
+            <td><a class="delete" queueid="{{ folder.id }}">Delete Row</a> </td> 
+            <td>{{ folder.SourceFolder }} </td> 
+            <td>--> {{ folder.DestFolder }}</td>
+            <td>{{ folder.PotentialSpaceFreed }}</td>
+        </tr>
         {% endfor %}
     </table>
-        <br clear="all"/>
-        <input type="submit" value="Start Copy"/>
-    </form>
+    <br clear="all"/>
+    <input type="submit" value="Start Copy"/>
+</form>
+{% endif %}
 {% endblock %}
