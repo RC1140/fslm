@@ -1,14 +1,13 @@
 {% extends "master.html" %}
 
 {% block title %}
-    The Following folders will be moved , click next to queue them
-{% endblock %}
-
-{% block head %}
-
+    The Following folders have been queued into the DB. 
 {% endblock %}
 
 {% block content %}
+<h2> The following folders have been queued into the DB , you 
+    may either init tasks now by clicking the Start Copy 
+    button or at any other time by using the View DB Queue Link</h2>
     <form action="/initDbQueue/" method="POST">
     {% csrf_token %}
     <table>
