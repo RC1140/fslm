@@ -28,6 +28,7 @@ a:hover
 	width:800px;
 	margin:0 auto;
     	color: #020202;
+	border:2px;
 
 }
 #content 
@@ -38,9 +39,8 @@ a:hover
 #innercontent
 {
 	padding-left:30px; padding-right:30px;
-	border:2px solid #CCCCCC;
-    	height:545px;
-	overflow:auto;
+    height:545px;
+    overflow:auto;
 }
 #drives
 {
@@ -65,3 +65,7 @@ ul { list-style:none;padding:0;  }
 ul li { padding-top:5px; } 
 .menu li { float: left; font-size:25px; padding-left:20px;padding-right:5px;line-height:30px;color:white;background-color:#DCE2E6;}
 .menu { height:55px; width:800px; background-color:#DCE2E6;}
+/* drive area */
+#drive-holder {stroke:!important #000 0.2;fill: !important "#DEDEDE";!important font-size:12px; }
+#drive-bar-full {fill:"#F03F03";}
+#drive-bar-safe {fill:"#5689B3"; } 

@@ -123,11 +123,12 @@ def drivesList(request, callbacks):
 
 def drivestats(request, drivepath):
     if (Drive.objects.filter(id=drivepath).count() == 0):
-        return render_to_response('stats.html', context_instance=RequestContext(request))
+        return render_to_response('stats.html',
+ context_instance=RequestContext(request))
     drive = Drive.objects.filter(id=drivepath)[0]
     isOver = checkDriveOverMaxCapacity(drive)
     overBy = getDriveOverMaxCapacity(drive)
-    return render_to_response('stats.html', {'drive': drive, 'isOver': isOver, 'overBy': overBy})
+    return render_to_response('stats.html', {'drive': drive, 'isOver': isOver, 'overBy': overBy}, context_instance=RequestContext(request))
 
 def getFirstAvailableDumpFolder(excludeFolder=''):
     '''Should return a folder where files can be moved to 
