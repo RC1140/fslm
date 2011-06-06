@@ -174,12 +174,7 @@ def initQueue(request):
         for item in queueLoader:
             moveFolderBackground.delay(item.id)
 
-        t = Template('''{% extends "master.html" %}
-                        {% block content %}
-                         Items Queued , as they are completed notifo messages will be sent
-                         {% endblock %}''')
-
-        return HttpResponse(t.render(Context()))
+        return render_to_response('simpleMessage.html',{'title':'Items Queued','message':'Items Queued , as they are completed notifo messages will be sent'}, context_instance=RequestContext(request))
     else:
         return HttpResponse('GET Not Allowed')
 
