@@ -14,7 +14,8 @@ urlpatterns = patterns('',
      url(r'^viewFileInDbQueue/$', 'spacemanager.views.viewDbQueue',name='dbQueue'),
      (r'^deleteQueueItem/(?P<queueid>\d+)/$', 'spacemanager.views.deleteQueueItem'),
      (r'^admin/', include(admin.site.urls)),
-     (r'^login/$',  'django.contrib.auth.views.login')
+     (r'^login/$',  'django.contrib.auth.views.login'), 
+     (r'^logout/$',  'spacemanager.views.logmeout')
 )
 
 if settings.DEBUG:

@@ -3,6 +3,7 @@ import shutil
 from django.http import HttpResponse
 from django.template import RequestContext, Template, Context
 from django.shortcuts import *
+from django.contrib.auth import logout
 #from settings import LOG_FILE
 from tasks import moveFolderBackground
 from django.contrib.auth import login
@@ -26,16 +27,29 @@ def getSpace(disk):
     capacity = (s.f_frsize * s.f_blocks) / (1048576)
     available = (s.f_frsize * s.f_bavail) / (1048576)
     used = (s.f_frsize * (s.f_blocks - s.f_bavail) ) / (1048576)
-    return  {'capacity': capacity, 'used': used, 'available': available}
+    return  {'capacity': capacity, 'used': used, 'available': available} #returns megabytes
+
+def logmeout(request):
+    logout(request)
+    return render_to_response('simpleMessage.html',{'title':'You have been logged out','message':'You have been successfully logged out!'}, context_instance=RequestContext(request))
 
 def needsAuth(request):
     if getSetting('ForceLogin') == 'True':
        if request.user.is_authenticated():
            return None
        else:
+           if request.path.startswith('/login'):
+               return None
            return HttpResponseRedirect('/login/?next='+request.path)
     return None
     
+def needsAuthUsr(user):
+    if getSetting('ForceLogin') == 'True':
+       if user.is_authenticated():
+           return None
+       else:
+           return HttpResponseRedirect('/login/')
+    return None
     
 def getSetting(key=''):
     if Setting.objects.filter(SettingKey = key).count() != 0:
@@ -120,18 +134,10 @@ def smallestFolder(folderToCheck):
 
 
 def home(request, callbacks):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     return render_to_response('home.html', context_instance=RequestContext(request))
 
 
 def drivesList(request, callbacks):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     #get drives
     #getSpace('/media/Evo0') 
     drives = Drive.objects.all()
@@ -144,17 +150,16 @@ def drivesList(request, callbacks):
     return HttpResponse(driveData)
 
 def drivestats(request, drivepath):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     if (Drive.objects.filter(id=drivepath).count() == 0):
-        return render_to_response('stats.html',
- context_instance=RequestContext(request))
+        return render_to_response('stats.html', context_instance=RequestContext(request))
     drive = Drive.objects.filter(id=drivepath)[0]
     isOver = checkDriveOverMaxCapacity(drive)
     overBy = getDriveOverMaxCapacity(drive)
-    return render_to_response('stats.html', {'drive': drive, 'isOver': isOver, 'overBy': overBy}, context_instance=RequestContext(request))
+    driveStats = getSpace(drive.Path)
+    free = formatSpace(driveStats['available'])
+    used = formatSpace(driveStats['used'])
+    folders = drive.folder_set.all().order_by('Path')
+    return render_to_response('stats.html', {'drive': drive, 'isOver': isOver,'free':free, 'used':used,  'overBy': overBy,  'folders':folders}, context_instance=RequestContext(request))
 
 def getFirstAvailableDumpFolder(excludeFolder='',  monitorFolder=''):
     '''Should return a folder where files can be moved to 
@@ -197,10 +202,6 @@ def getSpaceToFree(monitorDrive, dumpDrive):
         return vacuum
 
 def initQueue(request):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     if request.POST:
         queueLoader = MoveQueueItem.objects.all()
         for item in queueLoader:
@@ -211,29 +212,17 @@ def initQueue(request):
         return HttpResponse('GET Not Allowed')
 
 def deleteQueueItem(request,queueid):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     queueid = int(queueid)
     MoveQueueItem.objects.get(id=queueid).delete()
     return render_to_response('simpleMessage.html',{'title':'Queue Item Deleted','message':'Queue Item Deleted'}, context_instance=RequestContext(request))
 
 def viewDbQueue(request):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     itemsToCopy = MoveQueueItem.objects.all()
     return render_to_response('dbQueue.html',{'folders':itemsToCopy}, context_instance=RequestContext(request))
 
 
 
 def moveFiles(request):
-    #optional require login functionality
-    k = needsAuth(request)    
-    if k:
-        return k
     if request.method == 'POST':
         ''' We dont actually move any folders here we just stick them in the db queue
                At some other point in time we can run through the queue and create

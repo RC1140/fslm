@@ -7,15 +7,38 @@
         <ul>
             <li><h1>{{ drive.Name}}</h1></li>
             <li>Path: {{ drive.Path}}</li>
-            <li>Type: {{ drive.Type}}</li>
-            <li>Is Over Max Usage: {{isOver}}</li>
-            
-            <li>Over By: {{overBy}}</li>
-            {% if isOver %}
+            {% if drive.DriveType == 'D'  %}
+            <li>Type: Dump</li>
+            {% else %}
+            <li>Type: Monitor</li>
             {% endif %}
+            <li>Is Over Max Usage: {{isOver}}</li>
+            <li>Over By: {{overBy}}</li>
+            <li>Used: {{used}}
+            <li>Free: {{free}}
             <li>MaxUsagePercentage: {{ drive.MaxUsagePercentage}}</li>
             <li>DumpPreference: {{ drive.DumpPreference}}</li>
         </ul>
+        {% if folders %}
+        <table>
+        <tr>
+                    <th>ID</th>
+                    <th>Drive</th> 
+                    <th>Path</th>
+                    <th>MediaType</th>
+                </tr>
+         {% for folder in folders %}
+                <tr>
+                    <td>{{ folder.id }}</td>
+                    <td>{{ folder.Drive }} </td> 
+                    <td> {{ folder.Path }}</td>
+                    <td>{{ folder.MediaType }}</td>
+                </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+        <p> No Folders for this drive </p>
+        {% endif %}
     {% else %}
         <p>No drive found.</p>
     {% endif %}

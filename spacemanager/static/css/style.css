@@ -8,6 +8,8 @@ body
 }
 tspan, text { font-family: 'Geo',arial,serif;font-size:14px;}
 h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
+th { font-size:16px; font-weight:normal}
+td { text-align:left;}
 #header
 {
 	width:100%;

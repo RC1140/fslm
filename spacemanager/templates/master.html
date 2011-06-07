@@ -15,7 +15,10 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+
+{% if not AUTHNEEDED %}
 <div id="drives"><img src="/static/images/ajax-loader.gif" id="loader" alt="loading"/></div>
+{% endif %}
 <!--<div id="header"></div>-->
 <div id="bodyholder">
     <div id="content">
@@ -25,10 +28,15 @@
                 <li><a href="/move/">Queue Files For Move</a></li>
                 <li><a href="{% url dbQueue %}">View DB Queue</a></li>
                 <li><a href="/admin">Configuration</a></li>
+                <li><a href="/logout">Logout</a></li>
             </ul>
         </div>
 	<div id="innercontent" >
+    {% if AUTHNEEDED  and request.path != '/login/' and request.path != '/logout/'  %}
+<a href="/login/" >Click here to Login</a>
+    {% else %}
         {% block content %}{% endblock %}
+        {% endif %}
 	</div>
     </div>
 </div>
