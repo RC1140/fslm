@@ -77,6 +77,7 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
+LOGIN_REDIRECT_URL = '/home/'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',

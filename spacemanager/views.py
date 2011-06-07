@@ -5,6 +5,7 @@ from django.template import RequestContext, Template, Context
 from django.shortcuts import *
 #from settings import LOG_FILE
 from tasks import moveFolderBackground
+from django.contrib.auth import login
 from models import *
 import logging
 
@@ -27,6 +28,20 @@ def getSpace(disk):
     used = (s.f_frsize * (s.f_blocks - s.f_bavail) ) / (1048576)
     return  {'capacity': capacity, 'used': used, 'available': available}
 
+def needsAuth(request):
+    if getSetting('ForceLogin') == 'True':
+       if request.user.is_authenticated():
+           return None
+       else:
+           return HttpResponseRedirect('/login/?next='+request.path)
+    return None
+    
+    
+def getSetting(key=''):
+    if Setting.objects.filter(SettingKey = key).count() != 0:
+        return Setting.objects.filter(SettingKey = key)[0].Value
+    return ''
+
 
 def checkDriveOverMaxCapacity(disk):
     s = getSpace(disk.Path)
@@ -39,16 +54,16 @@ def checkDriveOverMaxCapacity(disk):
         return False
 
 
-def formatDriveSpace(kb):
-    '''If Its more than 10 change it to the next format'''
+def formatSpace(kb):
+    '''If Its more than 1024 change it to the next format'''
     format = "MB"
-    if (abs(kb) > 10240):
+    if (abs(kb) > 1024):
         kb = kb / 1024
         format = "GB"
-        if (abs(kb) > 10240):
+        if (abs(kb) > 1024):
             kb = kb / 1024
             format = "TB"
-            if (abs(kb) > 10240):
+            if (abs(kb) > 1024):
                 kb = kb / 1024
                 format = "PB"
     kb = round(kb, 2)
@@ -61,7 +76,7 @@ def getDriveOverMaxCapacity(disk):
     used = float(s['used'])
     capacitySize = cap * (float(disk.MaxUsagePercentage) / float(100))
     over = used - capacitySize
-    return formatDriveSpace(over)
+    return formatSpace(over)
 
 
 def getRawDriveOverMaxCapacity(disk):
@@ -79,7 +94,7 @@ def calcSize(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
-    return total_size / (1024 * 1024) 
+    return total_size / (1024 * 1024)  #returns MB
     
 def calcGBSize(start_path):
     return calcSize(start_path)/1024
@@ -105,10 +120,18 @@ def smallestFolder(folderToCheck):
 
 
 def home(request, callbacks):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     return render_to_response('home.html', context_instance=RequestContext(request))
 
 
 def drivesList(request, callbacks):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     #get drives
     #getSpace('/media/Evo0') 
     drives = Drive.objects.all()
@@ -120,8 +143,11 @@ def drivesList(request, callbacks):
     driveData += ']'
     return HttpResponse(driveData)
 
-
 def drivestats(request, drivepath):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     if (Drive.objects.filter(id=drivepath).count() == 0):
         return render_to_response('stats.html',
  context_instance=RequestContext(request))
@@ -171,6 +197,10 @@ def getSpaceToFree(monitorDrive, dumpDrive):
         return vacuum
 
 def initQueue(request):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     if request.POST:
         queueLoader = MoveQueueItem.objects.all()
         for item in queueLoader:
@@ -181,21 +211,29 @@ def initQueue(request):
         return HttpResponse('GET Not Allowed')
 
 def deleteQueueItem(request,queueid):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     queueid = int(queueid)
     MoveQueueItem.objects.get(id=queueid).delete()
     return render_to_response('simpleMessage.html',{'title':'Queue Item Deleted','message':'Queue Item Deleted'}, context_instance=RequestContext(request))
 
 def viewDbQueue(request):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     itemsToCopy = MoveQueueItem.objects.all()
     return render_to_response('dbQueue.html',{'folders':itemsToCopy}, context_instance=RequestContext(request))
 
 
-def getSetting(key=''):
-    if Setting.objects.filter(SettingKey = key).count() != 0:
-        return Setting.objects.filter(SettingKey = key)[0].Value
-    return ''
 
 def moveFiles(request):
+    #optional require login functionality
+    k = needsAuth(request)    
+    if k:
+        return k
     if request.method == 'POST':
         ''' We dont actually move any folders here we just stick them in the db queue
                At some other point in time we can run through the queue and create
@@ -275,7 +313,7 @@ def moveFiles(request):
                                         foldersQueued.append({'id':id,
                                                               'source':myfolder,
                                                               'dest':os.path.join(firstAvailableFolder, folder),
-                                                              'space':calcSize(myfolder)})
+                                                              'space':formatSpace(calcSize(myfolder))})
                                     else:
                                         return HttpResponse('No Dump folders found')
                             else:
@@ -292,7 +330,7 @@ def moveFiles(request):
                                         foldersQueued.append({'id':id,
                                                               'source':myfolder,
                                                               'dest':os.path.join(firstAvailableFolder, folder),
-                                                              'space':calcSize(myfolder)})
+                                                              'space':formatSpace(calcSize(myfolder))})
                                     else:
                                         return HttpResponse('No Dump folders found')
 
