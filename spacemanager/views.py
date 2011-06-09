@@ -82,7 +82,21 @@ def formatSpace(kb):
                 format = "PB"
     kb = round(kb, 2)
     return kb.__str__() + format
-
+    
+    
+def unFormatSpace(str):
+    mb =0
+    if str.endswith("MB"):
+        print(str.replace("MB", ""))
+        mb = float(str.replace("MB", ""))
+    if str.endswith("GB"):
+        print(str.replace("GB", ""))
+        mb = float(str.replace("GB", ""))* 1024
+    if str.endswith("TB"):
+        mb = float(str.replace("TB", ""))* 1024 * 1024
+        print(str.replace("TB", ""))
+    return int(mb)
+    
 
 def getDriveOverMaxCapacity(disk):
     s = getSpace(disk.Path)
@@ -236,7 +250,7 @@ def moveFiles(request):
                     mi = MoveQueueItem()
                     mi.SourceFolder = folderConstruct['source']
                     mi.DestFolder = folderConstruct['dest']
-                    mi.PotentialSpaceFreed = folderConstruct['space']
+                    mi.PotentialSpaceFreed = unFormatSpace(folderConstruct['space'])
                     logInfo('Saving MoveQueueItem to the db, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
                     mi.save()
                     folderConstruct['moved'] = True

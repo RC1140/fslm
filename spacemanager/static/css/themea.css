@@ -8,8 +8,9 @@ body
 }
 tspan, text { font-family: 'Geo',arial,serif;font-size:14px;}
 h1 { font-family: 'Lekton',arial,serif;font-size:22px;padding:0px;margin:0;}
-th { font-size:16px; font-weight:normal}
-td { text-align:left;}
+h2 { font-family: 'Geo',arial,serif; font-size:19px; padding:0px; margin:0; font-weight:normal; }
+th { font-size:16px; font-weight:normal;}
+th,td { text-align:left;}
 #header
 {
 	width:100%;
@@ -20,6 +21,7 @@ td { text-align:left;}
 a, a:visited
 {
     color:#5689B3;
+    cursor:pointer;
 }
 a:hover
 {

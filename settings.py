@@ -121,13 +121,7 @@ BROKER_VHOST = "/"
 
 CELERY_RESULT_BACKEND = "database"
 CELERY_RESULT_DBURI = ""
-CELERYBEAT_SCHEDULE = {
-    'runs-every-30-seconds': {
-        'task': 'tasks.add',
-        'schedule': timedelta(seconds=30),
-        'args': (16, 16)
-    },
-}
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 #Replace this your personal key
 notifoSecret = ''
 #Replace this your username

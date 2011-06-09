@@ -20,3 +20,8 @@ def moveFolderBackground(moveQueueID):
         return 'Folder Moved'
     else:
         return 'No Queue Item Found'
+
+
+@task()
+def ping():
+    print 'pinged'
