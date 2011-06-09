@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.template import RequestContext, Template, Context
 from django.shortcuts import *
 from django.contrib.auth import logout
+from datetime import date
+from datetime import datetime
 #from settings import LOG_FILE
 from tasks import moveFolderBackground
 from django.contrib.auth import login
@@ -217,10 +219,10 @@ def getSpaceToFree(monitorDrive, dumpDrive):
 
 def initQueue(request):
     if request.POST:
-        queueLoader = MoveQueueItem.objects.all()
+        #only load incomplete tasks
+        queueLoader = MoveQueueItem.objects.filter(StartTime__gt=datetime.now())
         for item in queueLoader:
             moveFolderBackground.delay(item.id)
-
         return render_to_response('simpleMessage.html',{'title':'Items Queued','message':'Items Queued , as they are completed notifo messages will be sent'}, context_instance=RequestContext(request))
     else:
         return HttpResponse('GET Not Allowed')
@@ -231,7 +233,7 @@ def deleteQueueItem(request,queueid):
     return render_to_response('simpleMessage.html',{'title':'Queue Item Deleted','message':'Queue Item Deleted'}, context_instance=RequestContext(request))
 
 def viewDbQueue(request):
-    itemsToCopy = MoveQueueItem.objects.all()
+    itemsToCopy = MoveQueueItem.objects.filter(StartTime__gt=datetime.now())
     return render_to_response('dbQueue.html',{'folders':itemsToCopy}, context_instance=RequestContext(request))
 
 
@@ -252,6 +254,11 @@ def moveFiles(request):
                     mi.DestFolder = folderConstruct['dest']
                     mi.PotentialSpaceFreed = unFormatSpace(folderConstruct['space'])
                     logInfo('Saving MoveQueueItem to the db, Source:'+mi.SourceFolder + ' ' + mi.DestFolder)
+                    mi.StartTime = date(2050, 12, 31)
+                    mi.EndTime = date(2050, 12, 31)
+                    mi.save()
+                    mi.StartTime = date(2050, 12, 31)
+                    mi.EndTime = date(2050, 12, 31)
                     mi.save()
                     folderConstruct['moved'] = True
                 else:

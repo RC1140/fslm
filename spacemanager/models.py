@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib import admin
-
+from datetime import datetime
 class Drive(models.Model):
     Path=models.CharField(max_length=1024)
     Name=models.CharField(max_length=255)
@@ -40,6 +40,8 @@ class MoveQueueItem(models.Model):
     DestFolder = models.CharField(max_length=1024)
     #space that can be freed by executing this item in mb
     PotentialSpaceFreed = models.IntegerField(default=0)
+    StartTime = models.DateTimeField()
+    EndTime = models.DateTimeField()
 
 
 class Setting(models.Model):
