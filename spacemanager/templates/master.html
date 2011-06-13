@@ -10,8 +10,8 @@
 
     {% if THEME %}
 	<link rel="stylesheet" href="/static/css/{{THEME}}.css"/>
+    <link rel="stylesheet" href="/static/css/{{THEME}}_menu.css" type="text/css" />
     {% endif %}
-    <link rel="stylesheet" href="/static/css/menu_style.css" type="text/css" />
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
@@ -23,28 +23,6 @@
 <!--<div id="header"></div>-->
 <div id="bodyholder">
     <div id="content">
-    <!--<div class="menu">
-		<ul>
-			<li><a href="#" >Home</a></li>
-			<li><a href="#" id="current">Products</a>
-				<ul>
-					<li><a href="#">Drop Down CSS Menus</a></li>
-					<li><a href="#">Horizontal CSS Menus</a></li>
-					<li><a href="#">Vertical CSS Menus</a></li>
-					<li><a href="#">Dreamweaver Menus</a></li>
-			   </ul>
-		  </li>
-			<li><a href="/faq.php">FAQ</a>
-                <ul>
-                <li><a href="#">Drop Down CSS Menus</a></li>
-                <li><a href="#">Horizontal CSS Menus</a></li>
-                <li><a href="#">Vertical CSS Menus</a></li>
-                <li><a href="#">Dreamweaver Menus</a></li>
-                </ul>
-          </li>
-			<li><a href="/contact/contact.php">Contact</a></li>
-		</ul>
-	</div>-->
         <div class="menu">
             <ul>
                 <li><a href="/">Home </a></li>
