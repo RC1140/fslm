@@ -6,10 +6,12 @@ from django.shortcuts import *
 from django.contrib.auth import logout
 from datetime import date
 from datetime import datetime
+from lib import *
 #from settings import LOG_FILE
 from tasks import moveFolderBackground
 from django.contrib.auth import login
 from models import *
+from django.forms.models import modelformset_factory
 import logging
 
 
@@ -24,12 +26,7 @@ def logInfo(message):
     return;
 
 
-def getSpace(disk):
-    s = os.statvfs(disk)
-    capacity = (s.f_frsize * s.f_blocks) / (1048576)
-    available = (s.f_frsize * s.f_bavail) / (1048576)
-    used = (s.f_frsize * (s.f_blocks - s.f_bavail) ) / (1048576)
-    return  {'capacity': capacity, 'used': used, 'available': available} #returns megabytes
+
 
 def logmeout(request):
     logout(request)
@@ -68,55 +65,6 @@ def checkDriveOverMaxCapacity(disk):
         return True
     else:
         return False
-
-
-def formatSpace(kb):
-    '''If Its more than 1024 change it to the next format'''
-    format = "MB"
-    if (abs(kb) > 1024):
-        kb = kb / 1024
-        format = "GB"
-        if (abs(kb) > 1024):
-            kb = kb / 1024
-            format = "TB"
-            if (abs(kb) > 1024):
-                kb = kb / 1024
-                format = "PB"
-    kb = round(kb, 2)
-    return kb.__str__() + format
-    
-    
-def unFormatSpace(str):
-    mb =0
-    if str.endswith("MB"):
-        print(str.replace("MB", ""))
-        mb = float(str.replace("MB", ""))
-    if str.endswith("GB"):
-        print(str.replace("GB", ""))
-        mb = float(str.replace("GB", ""))* 1024
-    if str.endswith("TB"):
-        mb = float(str.replace("TB", ""))* 1024 * 1024
-        print(str.replace("TB", ""))
-    return int(mb)
-    
-
-def getDriveOverMaxCapacity(disk):
-    s = getSpace(disk.Path)
-    cap = float(s['capacity'])
-    used = float(s['used'])
-    capacitySize = cap * (float(disk.MaxUsagePercentage) / float(100))
-    over = used - capacitySize
-    return formatSpace(over)
-
-
-def getRawDriveOverMaxCapacity(disk):
-    s = getSpace(disk.Path)
-    cap = float(s['capacity'])
-    used = float(s['used'])
-    capacitySize = cap * (float(disk.MaxUsagePercentage) / float(100))
-    over = used - capacitySize
-    return over #in MB
-
 
 def calcSize(start_path):
     total_size = 0
@@ -161,7 +109,7 @@ def drivesList(request, callbacks):
     for drive in drives:
         k = getSpace(drive.Path)
         isOver = checkDriveOverMaxCapacity(drive)
-        driveData += "{'name':'" + drive.Name + "', 'space':'" + k['available'].__str__() + "','capacity':'" + k['capacity'].__str__() + "','used':'" + k['used'].__str__() + "','isOver':'" + isOver.__str__() + "','link':'/drivestats/" + drive.id.__str__() + "'},"
+        driveData += "{'name':'" + drive.Name + "', 'space':'" + k['available'].__str__() + "','capacity':'" + k['capacity'].__str__() + "','used':'" + k['used'].__str__() + "','isOver':'" + isOver.__str__() + "','link':'/drivestats/" + drive.id.__str__() + "','type':'"+ drive.DriveType +  "'},"
     driveData += ']'
     return HttpResponse(driveData)
 
@@ -234,13 +182,29 @@ def deleteQueueItem(request,queueid):
 
 def viewDbQueue(request):
     itemsToCopy = MoveQueueItem.objects.filter(StartTime__gt=datetime.now())
+    for item in itemsToCopy:
+        item.PotentialSpaceFreed = formatSpace(item.PotentialSpaceFreed)
     return render_to_response('dbQueue.html',{'folders':itemsToCopy}, context_instance=RequestContext(request))
 
 def viewActiveDbQueue(request):
     itemsBusyCopy = MoveQueueItem.objects.filter(StartTime__lt=datetime.now()).filter(EndTime__gt=datetime.now())
+    for item in itemsBusyCopy:
+        item.PotentialSpaceFreed = formatSpace(item.PotentialSpaceFreed)
+        k = datetime.now() - item.StartTime
+        item.Duration = k.seconds / 60 #minutes
     return render_to_response('dbActiveQueue.html',{'folders':itemsBusyCopy}, context_instance=RequestContext(request))
 
-
+def settings(request):
+    settings = Setting.objects.all()
+    if request.method == "POST":
+        for setting in settings:
+            value =request.POST.get(setting.SettingKey)
+            if value != "":
+                setting.Value = value
+                setting.save()
+    else:
+        settings = Setting.objects.all()
+    return render_to_response("settings.html", {"settings": settings}, context_instance=RequestContext(request))
 
 def moveFiles(request):
     if request.method == 'POST':

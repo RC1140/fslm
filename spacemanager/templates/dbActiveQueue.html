@@ -1,0 +1,62 @@
+{% extends "master.html" %}
+
+{% block title %}
+    The Following folders are busy being processed. 
+{% endblock %}
+
+{% block head %}
+<script>
+$(document).ready(function(){
+    console.log('test');
+    $('a.delete').click(function(){
+       var queueID = $(this).attr('queueid');  
+       $.ajax({
+           method: 'get',
+           url: '/deleteQueueItem/'+queueID.toString()+'/',
+           success: function(returndata) {
+               $('a[queueid="'+queueID+'"]').parent().parent().remove();
+               alert('Item Deleted');
+           }
+       });
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>The Following folders are busy being processed. </h2>
+{% if folders %}
+<form action="#" method="POST">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <!--<th> 
+                Actions 
+            </th> -->
+            <th>
+                Duration
+            </th>
+            <th> 
+                Source Folder
+            </th> 
+            <th> 
+                Destination Folder
+            </th> 
+            <th> 
+                Source Folder Size 
+            </th> 
+        </tr>
+        {% for folder in folders %}
+        <tr>
+            <!--<td><a class="delete" queueid="{{ folder.id }}">Delete Row</a> </td> -->
+            <td>{{folder.Duration}} m </td>
+            <td>{{ folder.SourceFolder }} </td> 
+            <td>--> {{ folder.DestFolder }}</td>
+            <td>{{ folder.PotentialSpaceFreed }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br clear="all"/>
+</form>
+{% endif %}
+{% endblock %}

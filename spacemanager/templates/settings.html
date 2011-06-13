@@ -1,0 +1,34 @@
+{% extends "master.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+    <form method="POST" action="/settings/">
+    {% csrf_token %}
+    <table>
+    {% for setting in settings %}
+         
+            <tr title="{{setting.Description}}">
+                <td>{{ setting.SettingKey }} </td>
+                {% if setting.Type == "bool" %}
+                <td> 
+                <select name="{{setting.SettingKey}}" >
+                {% if setting.Value == "True" %}
+                <option value="False">False</option>
+                <option value="True" selected >True</option>
+                {% else %}
+                <option value="False" selected >False</option>
+                <option value="True" >True</option>
+                {% endif %}
+                </select>
+                </td>
+                {% else %}
+                <td> <input type="text" name="{{setting.SettingKey}}" value="{{setting.Value}}"></input></td>
+                {% endif %}
+                <tr/>
+    {% endfor %}
+    </table>
+    <br clear="all"/>
+    <input type="submit" value="Save"/>
+    </form>
+{% endblock %}

@@ -11,6 +11,7 @@
     {% if THEME %}
 	<link rel="stylesheet" href="/static/css/{{THEME}}.css"/>
     {% endif %}
+    <link rel="stylesheet" href="/static/css/menu_style.css" type="text/css" />
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
@@ -22,13 +23,40 @@
 <!--<div id="header"></div>-->
 <div id="bodyholder">
     <div id="content">
+    <!--<div class="menu">
+		<ul>
+			<li><a href="#" >Home</a></li>
+			<li><a href="#" id="current">Products</a>
+				<ul>
+					<li><a href="#">Drop Down CSS Menus</a></li>
+					<li><a href="#">Horizontal CSS Menus</a></li>
+					<li><a href="#">Vertical CSS Menus</a></li>
+					<li><a href="#">Dreamweaver Menus</a></li>
+			   </ul>
+		  </li>
+			<li><a href="/faq.php">FAQ</a>
+                <ul>
+                <li><a href="#">Drop Down CSS Menus</a></li>
+                <li><a href="#">Horizontal CSS Menus</a></li>
+                <li><a href="#">Vertical CSS Menus</a></li>
+                <li><a href="#">Dreamweaver Menus</a></li>
+                </ul>
+          </li>
+			<li><a href="/contact/contact.php">Contact</a></li>
+		</ul>
+	</div>-->
         <div class="menu">
             <ul>
                 <li><a href="/">Home </a></li>
-                <li><a href="/move/">Queue Files For Move</a></li>
-                <li><a href="{% url dbQueue %}">View DB Queue</a></li>
-                <li><a href="viewTasksInDbQueue">View DB Queue</a></li>
-                <li><a href="/admin">Configuration</a></li>
+                <li><a href="#" >Files</a><ul>
+                <li><a href="/move/">Queue Files</a></li>
+                <li><a href="{% url dbQueue %}">Execute Queue</a></li>
+                <li><a href="/viewTasksInDbQueue">View Current Queue</a></li>
+                </ul></li>
+                <li><a href="/admin">Configuration</a><ul>
+                <li><a href="/settings" >Settings</a>
+                </ul>
+                </li>
                 <li><a href="/logout">Logout</a></li>
             </ul>
         </div>

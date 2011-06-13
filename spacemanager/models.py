@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib import admin
+from django.forms import ModelForm
 from datetime import datetime
 class Drive(models.Model):
     Path=models.CharField(max_length=1024)
@@ -47,6 +48,7 @@ class MoveQueueItem(models.Model):
 class Setting(models.Model):
     SettingKey = models.CharField(max_length=1024,null=True) 
     Value=models.CharField(max_length=1024,  default='')
+    Type = models.CharField(max_length=100,  default='bool' )
     def __unicode__(self):
         return self.SettingKey.__str__() + ' ' + self.Value
 
