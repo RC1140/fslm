@@ -67,3 +67,23 @@ def unFormatSpace(str):
         mb = float(str.replace("TB", ""))* 1024 * 1024
         print(str.replace("TB", ""))
     return int(mb)
+    
+    
+def getSetting(key=''):
+    if Setting.objects.filter(SettingKey = key).count() != 0:
+        return Setting.objects.filter(SettingKey = key)[0].Value
+    return ''
+
+def calcSize(start_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size / (1024 * 1024)  #returns MB
+    
+def calcGBSize(start_path):
+    return calcSize(start_path)/1024
+
+    
+    

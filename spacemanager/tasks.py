@@ -4,6 +4,7 @@ import os.path
 from models import *
 from lib import getDriveOverMaxCapacity
 from lib import checkDriveOverMaxCapacity
+from lib import getSetting
 import notifo
 import settings
 from datetime import datetime
@@ -27,7 +28,7 @@ def moveFolderBackground(moveQueueID):
         kbSaved = mi.PotentialSpaceFreed * 1024
         k = mi.EndTime - mi.StartTime
         rate = round(kbSaved / k.seconds)
-        notifo.send_notification(settings.notifoUser,settings.notifoSecret,settings.notifoUser,('%s Moved successfully from %s to %s at an average rate of %s kb/s')%( mi.SourceFolder , mi.StartTime.strftime('%d %b %H:%M'),  mi.EndTime.strftime('%d %b %H:%M'), rate))
+        notifo.send_notification(settings.notifoUser,settings.notifoSecret,settings.notifoUser,('%s Moved successfully from %s to %s at an average rate of %s kb/s')%( mi.SourceFolder , mi.StartTime.strftime('%d %b %H:%M'),  mi.EndTime.strftime('%d %b %H:%M'), rate.__str__()))
         return 'Folder Moved'
     else:
         return 'No Queue Item Found'
@@ -35,14 +36,16 @@ def moveFolderBackground(moveQueueID):
 @task()
 def notifyDrivesOverMaxCapacity():
     print('notifyDrivesOverMaxCapacity executed')
-    if (Drive.objects.all().count() == 0):
-        return
-    for drive in Drive.objects.all():
-        isOver = checkDriveOverMaxCapacity(drive)
-        overBy = getDriveOverMaxCapacity(drive)
-        if isOver:
-            notifo.send_notification(settings.notifoUser,settings.notifoSecret,settings.notifoUser,('FSLM is notifying you that one of your managed drives: %s is over it\'s maximum capacity by overBy')%(drive.Name, overBy))
+    if getSetting('NotifyOverMaxCapacity') == 'True':        
+        if (Drive.objects.all().count() == 0):
             return
+        for drive in Drive.objects.all():
+            isOver = checkDriveOverMaxCapacity(drive)
+            overBy = getDriveOverMaxCapacity(drive)
+            print(drive.Name)
+            print(overBy)
+            if isOver:
+                notifo.send_notification(settings.notifoUser,settings.notifoSecret,settings.notifoUser,('FSLM is notifying you that one of your managed drives: %s is over its maximum capacity by %s')%(drive.Name, overBy))
 
 
 

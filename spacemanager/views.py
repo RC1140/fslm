@@ -25,9 +25,6 @@ def logInfo(message):
 #    logger.info(message)
     return;
 
-
-
-
 def logmeout(request):
     logout(request)
     return render_to_response('simpleMessage.html',{'title':'You have been logged out','message':'You have been successfully logged out!'}, context_instance=RequestContext(request))
@@ -50,32 +47,6 @@ def needsAuthUsr(user):
            return HttpResponseRedirect('/login/')
     return None
     
-def getSetting(key=''):
-    if Setting.objects.filter(SettingKey = key).count() != 0:
-        return Setting.objects.filter(SettingKey = key)[0].Value
-    return ''
-
-
-def checkDriveOverMaxCapacity(disk):
-    s = getSpace(disk.Path)
-    cap = float(s['capacity'])
-    used = float(s['used'])
-    perc = (used / cap) * 100
-    if perc > disk.MaxUsagePercentage:
-        return True
-    else:
-        return False
-
-def calcSize(start_path):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size / (1024 * 1024)  #returns MB
-    
-def calcGBSize(start_path):
-    return calcSize(start_path)/1024
 
 def smallestFolder(folderToCheck):
     '''This defines the monitor and dump folders , later we can add multiple so that 
