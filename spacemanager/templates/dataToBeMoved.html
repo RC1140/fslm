@@ -27,7 +27,13 @@
 
         </tr>
         {% for folder in folders %}
-                <tr>
+         {% if folder.new %}
+            <tr id="{{folder.drive}}" class="newDrive">
+                    <td onclick="fslm.queues.collapse('{{folder.drive}}')"> - </td>
+                    <td colspan="3">{{folder.drive}}</td>
+            </tr>
+         {% endif %}
+                <tr id="{{folder.drive}}">
                     <td><INPUT TYPE=CHECKBOX NAME="{{ folder.id }}"></td>
                     <td>{{ folder.source }} </td> 
                     <td>--> {{ folder.dest }}</td>

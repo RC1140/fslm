@@ -1,4 +1,18 @@
 fslm = {
+    queues: {
+        collapse: function(drive) { 
+                $('tr#'+drive).not('.newDrive').hide(300);
+                $('tr#' + drive + '.newDrive').find('td').eq(0).html('+');
+                $('tr#' + drive + '.newDrive').find('td').eq(0).attr('onclick','fslm.queues.expand(\''+drive+'\')');
+                return;
+            },
+            expand: function(drive) { 
+                $('tr#'+drive).not('.newDrive').show(300);
+                $('tr#' + drive + '.newDrive').find('td').eq(0).html('-');
+                $('tr#' + drive + '.newDrive').find('td').eq(0).attr('onclick','fslm.queues.collapse(\''+drive+'\')');
+                return;
+            }
+    },
 drives : {
 	sizeData : {},
 	getDrivesSize: function(callback){

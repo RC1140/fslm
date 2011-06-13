@@ -2,7 +2,7 @@ import os
 import shutil
 from django.http import HttpResponse
 from django.template import RequestContext, Template, Context
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,  HttpResponseRedirect
 from django.contrib.auth import logout
 from datetime import date
 from datetime import datetime
@@ -163,6 +163,8 @@ def moveFiles(request):
             logInfo('Move: No Drives setup to monitor')
             return HttpResponse('No drives found to monitor')
         foldersQueued = []
+        isNewDrive = True
+        currentDriveId = -1
         for monitorDrive in drives:
             logInfo('Move: Monitor drives found')
             freedSpace = 0
@@ -181,6 +183,9 @@ def moveFiles(request):
                         if (ignoreHidden == 'True' and not(folder.startswith('.'))) or (ignoreHidden != 'True'):
                             myfolder = os.path.join(monitorFolder.Path, folder)
                             if MoveQueueItem.objects.filter(SourceFolder=myfolder).count() == 0:
+                                if currentDriveId != monitorDrive.id:
+                                    isNewDrive = True
+                                    currentDriveId = monitorDrive.id
                                 logInfo('Move: an existing MoveQueueItem was not found')
                                 dump = getFirstAvailableDumpFolder(monitorFolder=monitorFolder)
                                 firstAvailableFolder = dump['path']
@@ -210,7 +215,9 @@ def moveFiles(request):
                                             foldersQueued.append({'id':id,
                                                                   'source':myfolder,
                                                                   'dest':os.path.join(firstAvailableFolder, folder),
-                                                                  'space':formatSpace(calcSize(myfolder))})
+                                                                  'space':formatSpace(calcSize(myfolder)), 
+                                                                  'new':isNewDrive, 
+                                                                  'drive': monitorDrive.Name.replace(' ', '')})
                                         else:
                                             return HttpResponse('No Dump folders found')
                                 else:
@@ -227,12 +234,16 @@ def moveFiles(request):
                                             foldersQueued.append({'id':id,
                                                                   'source':myfolder,
                                                                   'dest':os.path.join(firstAvailableFolder, folder),
-                                                                  'space':formatSpace(calcSize(myfolder))})
+                                                                  'space':formatSpace(calcSize(myfolder)), 
+                                                                  'new':isNewDrive, 
+                                                                  'drive': monitorDrive.Name.replace(' ', '')})
                                         else:
                                             return HttpResponse('No Dump folders found')
 
                                     #Yes this is not a dir but we can still move or copy it
                                     logInfo('Move: the folder '+ myfolder + ' is not a valid directory')
+                        isNewDrive = False
+                    
 
     request.session['folders'] = foldersQueued
     return render_to_response('dataToBeMoved.html',{'folders':foldersQueued}, context_instance=RequestContext(request))
