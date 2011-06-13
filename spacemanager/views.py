@@ -2,28 +2,16 @@ import os
 import shutil
 from django.http import HttpResponse
 from django.template import RequestContext, Template, Context
-from django.shortcuts import *
+from django.shortcuts import render_to_response
 from django.contrib.auth import logout
 from datetime import date
 from datetime import datetime
 from lib import *
 #from settings import LOG_FILE
 from tasks import moveFolderBackground
-from django.contrib.auth import login
 from models import *
-from django.forms.models import modelformset_factory
-import logging
 
 
-def logInfo(message):
-#    logger = logging.getLogger(__name__)
-#    hdlr = logging.FileHandler(LOG_FILE+ '/info.log')
-#    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-#    hdlr.setFormatter(formatter)
-#    logger.addHandler(hdlr)
-#    logger.setLevel(logging.INFO)
-#    logger.info(message)
-    return;
 
 def logmeout(request):
     logout(request)
@@ -46,7 +34,6 @@ def needsAuthUsr(user):
        else:
            return HttpResponseRedirect('/login/')
     return None
-    
 
 def smallestFolder(folderToCheck):
     '''This defines the monitor and dump folders , later we can add multiple so that 
@@ -96,45 +83,6 @@ def drivestats(request, drivepath):
     folders = drive.folder_set.all().order_by('Path')
     return render_to_response('stats.html', {'drive': drive, 'isOver': isOver,'free':free, 'used':used,  'overBy': overBy,  'folders':folders}, context_instance=RequestContext(request))
 
-def getFirstAvailableDumpFolder(excludeFolder='',  monitorFolder=''):
-    '''Should return a folder where files can be moved to 
-        if none is found then a '' is returned and nothing should be
-        moved , it might also be good to indicate this somewhere in the
-        system.'''
-    '''Get monitor folder type'''
-    monitorMediaType = monitorFolder.MediaType
-    if Drive.objects.filter(DriveType='D').count() == 0:
-        logInfo('GFADF: No Dump Folders found')
-        return {'path':'', 'drive':''}
-
-    drives = Drive.objects.filter(DriveType='D').order_by('DumpPreference')
-
-    if drives.count() > 0:
-        logInfo('GFADF: '+ drives.count().__str__() + ' dump drives found')
-        for d in drives:
-            dumpFolders = d.folder_set.filter(MediaType=monitorMediaType).order_by('Path')
-            logInfo('GFADF:DFF: '+dumpFolders.count().__str__() + 'Dump Folders found for ' + d.Name )
-            s = getRawDriveOverMaxCapacity(d)
-            if s < -1:
-                logInfo('GFADF:OC: First Available Dump Drive: '+ d.Name +' Over Capacity:'+ s.__str__())
-                #there is free space on this drive under the max capacity  and at least 1 gigabyte is free
-                for dumpFolder in dumpFolders:
-                    logInfo('First Available Dump Folder found: '+ dumpFolder.Path)
-                    return {'path':dumpFolder.Path, 'drive':d}
-            else: 
-                logInfo('GFADF:OC: Dump Drive: '+ d.Name +' Over Capacity:'+ s.__str__()  + ' but still not less than -1?')
-    logInfo('First Available Dump Folder not found')
-    return {'path':'', 'drive':''}
-
-def getSpaceToFree(monitorDrive, dumpDrive):
-    excess = getDriveOverMaxCapacity(monitorDrive)
-    vacuum = getDriveOverMaxCapacity(dumpDrive)
-    if (vacuum > 0):
-        return 0
-    if (excess > vacuum):
-        return excess
-    else:
-        return vacuum
 
 def initQueue(request):
     if request.POST:
@@ -166,6 +114,7 @@ def viewActiveDbQueue(request):
     return render_to_response('dbActiveQueue.html',{'folders':itemsBusyCopy}, context_instance=RequestContext(request))
 
 def settings(request):
+    initSettings()
     settings = Setting.objects.all()
     if request.method == "POST":
         for setting in settings:
