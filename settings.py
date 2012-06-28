@@ -15,6 +15,8 @@ ADMINS = (
 MANAGERS = ADMINS
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.

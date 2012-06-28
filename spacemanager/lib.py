@@ -138,11 +138,30 @@ def getSpaceToFree(monitorDrive, dumpDrive):
         return vacuum
         
 def logInfo(message):
-#    logger = logging.getLogger(__name__)
-#    hdlr = logging.FileHandler(LOG_FILE+ '/info.log')
-#    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-#    hdlr.setFormatter(formatter)
-#    logger.addHandler(hdlr)
-#    logger.setLevel(logging.INFO)
-#    logger.info(message)
+    logger = logging.getLogger(__name__)
+    hdlr = logging.FileHandler(os.path.dirname(os.path.realpath(__file__)) + '/fslm.log')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    hdlr.setFormatter(formatter)
+    logger.addHandler(hdlr)
+    logger.setLevel(logging.INFO)
+    logger.info(message)
     return;
+
+
+def getMountedDrives():
+   drives = []
+   try:
+        with open("/proc/mounts", "r") as ifp:
+            for line in ifp:
+                fields= line.rstrip('\n').split()
+                # note that line above assumes that
+                # no mount points contain whitespace
+                drives.append(fields[1])
+   except EnvironmentError:
+        pass
+   return drives
+
+def genDriveNameFromPath(path):
+    parts = path.split('/')
+    path = parts[len(parts)-1]
+    return path

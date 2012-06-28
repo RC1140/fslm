@@ -126,6 +126,25 @@ def settings(request):
         settings = Setting.objects.all()
     return render_to_response("settings.html", {"settings": settings}, context_instance=RequestContext(request))
 
+def drivewizard(request):
+    mdrives = []
+    mdrives = getMountedDrives()
+    if request.method == "POST":
+        logInfo(' Drives: ' + str(len(mdrives)))
+        for idx,drive in enumerate(mdrives):
+            val = request.POST.get('drive_'+str(idx))
+            type = request.POST.get('type_'+str(idx))
+            preference = request.POST.get('pref_'+str(idx))
+            maxusage = request.POST.get('max_'+str(idx))
+            name = genDriveNameFromPath(drive)
+            if val == "on" and type != "" and preference != "" and maxusage != "" and name != "":
+                d1 = Drive(Path=drive,Name=name,DriveType=type,DumpPreference=preference,MaxUsagePercentage=maxusage);
+                logInfo(str(idx) + ' '+str(drive) + ' : ' + str(d1.Name) + ' ' + str(d1.DriveType) + ' ' + str(d1.DumpPreference) + ' ' + str(d1.MaxUsagePercentage))
+                d1.save()
+    else:
+        mdrives = getMountedDrives()
+    return render_to_response("drivewizard.html", {"mdrives": mdrives}, context_instance=RequestContext(request))
+
 def moveFiles(request):
     if request.method == 'POST':
         ''' We dont actually move any folders here we just stick them in the db queue
