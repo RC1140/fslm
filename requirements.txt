@@ -1,5 +1,0 @@
-django-celery
-djkombu
-mysql-python
-south
-notifo
